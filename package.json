@@ -1,0 +1,40 @@
+{
+  "name": "api-inventory",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --loader ts-node/esm --no-warnings=ExperimentalWarning --experimental-specifier-resolution=node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:watch": "vitest --watch",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "docker:build": "docker build -t api-inventory .",
+    "docker:run": "docker run -p 3000:3000 api-inventory",
+    "compose:up": "docker-compose up",
+    "compose:up:dev": "docker-compose --profile dev up",
+    "compose:down": "docker-compose down",
+    "compose:build": "docker-compose build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.3",
+    "@types/node": "20.14.11",
+    "@vitest/coverage-v8": "3.2.4",
+    "@vitest/ui": "3.2.4",
+    "typescript": "5.6.3",
+    "vitest": "3.2.4"
+  }
+}

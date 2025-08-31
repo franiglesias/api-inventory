@@ -1,19 +1,26 @@
 import * as http from 'http';
 import express from 'express';
-import type {AppServer} from "./server.js";
+import type {AppServer} from "./server.ts";
 
+
+type ConfigureFn = (app: express.Express) => void
 
 class ExpressServer implements AppServer {
-    private express: express.Express;
+    private readonly express: express.Express;
+    private readonly host: string;
+    private readonly port: number;
     private httpServer?: http.Server;
-    private host: string;
-    private port: number;
 
-    constructor(host: string, port: number) {
+    constructor(host: string, port: number, configure?: ConfigureFn) {
         this.host = host;
         this.port = port;
 
         this.express = express();
+
+        // Allow mounting routes/middleware externally without editing this class
+        if (configure) {
+            configure(this.express)
+        }
     }
 
     public getExpress(): express.Express {

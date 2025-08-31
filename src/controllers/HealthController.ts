@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import type {Request, Response} from 'express'
 
 /**
  * A simple controller demonstrating a healthcheck endpoint.

@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "node --loader ts-node/esm --no-warnings=ExperimentalWarning --experimental-specifier-resolution=node src/index.ts",
-    "build": "tsc",
+    "dev:debug": "node --inspect=0.0.0.0:9229 --loader ts-node/esm --no-warnings=ExperimentalWarning --experimental-specifier-resolution=node src/index.ts",
+    "stop": "node -e \"const fs=require('fs');const f='.server.pid';if(!fs.existsSync(f)){console.error('No .server.pid found. Is the server running?');process.exit(1)}const pid=Number(fs.readFileSync(f,'utf8').trim());if(!pid){console.error('Invalid PID in .server.pid');process.exit(1)}try{process.kill(pid,'SIGTERM');console.log('Sent SIGTERM to PID',pid);}catch(e){console.error('Failed to signal process',e);process.exit(1)}\"",
+    "clean": "node -e \"const fs=require('fs');if(fs.existsSync('dist'))fs.rmSync('dist',{recursive:true,force:true});\"",
+    "build": "npm run clean && tsc",
     "start": "node dist/index.js",
     "test": "vitest",
     "test:run": "vitest run",
@@ -34,6 +37,7 @@
     "@types/node": "20.14.11",
     "@vitest/coverage-v8": "3.2.4",
     "@vitest/ui": "3.2.4",
+    "ts-node": "10.9.2",
     "typescript": "5.6.3",
     "vitest": "3.2.4"
   }

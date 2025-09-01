@@ -1,6 +1,6 @@
 import * as http from 'http';
 import express from 'express';
-import type {AppServer} from "./server.ts";
+import type {AppServer} from "./server";
 
 
 type ConfigureFn = (app: express.Express) => void

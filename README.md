@@ -328,3 +328,207 @@ If Docker containers fail to start:
 ## License
 
 ISC
+
+# API Inventory
+
+## Development
+
+- Start the server (TypeScript, via ts-node):
+  - npm run dev
+  - For debugging with inspector on 9229: npm run dev:debug
+
+- Stop the currently running server:
+  - npm run stop
+  - This reads the PID from .server.pid and sends SIGTERM for a graceful shutdown.
+
+Notes:
+- The server writes its process ID to .server.pid when it starts. On SIGINT/SIGTERM or normal exit, it will attempt to remove the file.
+- If .server.pid is missing, the stop command will print a helpful message.
+- If you started multiple instances manually, the PID file only tracks the last process that wrote it.
+
+# API Inventory
+
+A TypeScript Node.js API starter using Express and Vitest.
+
+## Prerequisites
+- Node.js >= 18 (LTS or newer)
+- npm (or pnpm/yarn)
+
+## Getting Started
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Start in dev mode (TypeScript via ts-node loader):
+   ```bash
+   npm run dev
+   ```
+
+3. Run tests:
+   ```bash
+   npm test
+   ```
+
+4. Open test UI (optional):
+   ```bash
+   npm run test:ui
+   ```
+
+### Docker Development
+
+1. Start with Docker Compose:
+   ```bash
+   npm run compose:up:dev
+   ```
+
+2. Run tests inside container:
+   ```bash
+   docker-compose exec api-dev npm test
+   ```
+
+### Production Build
+
+**Local build:**
+```bash
+npm run build
+npm run start
+```
+
+**Docker production:**
+```bash
+npm run compose:up
+```
+
+## Testing Strategy
+
+### Test Types
+- **Unit Tests**: Test individual functions and classes
+- **Integration Tests**: Test API endpoints and database interactions
+- **Coverage**: Maintain high code coverage with detailed reports
+
+### Writing Tests
+
+Create test files alongside your source code or in the `test/` directory:
+
+```typescript
+// Example: src/inventory.test.ts
+import { describe, it, expect } from 'vitest';
+import { Inventory } from './inventory';
+
+describe('Inventory', () => {
+  it('should create an empty inventory', () => {
+    const inventory = new Inventory();
+    expect(inventory.getProducts()).toHaveLength(0);
+  });
+});
+```
+
+### Test Configuration
+
+The project uses `vitest.config.ts` for configuration:
+- **Environment**: Node.js environment for API testing
+- **Coverage**: V8 provider with HTML and JSON reports
+- **Globals**: Global test functions available without imports
+- **File patterns**: Automatic test discovery
+- **Timeout**: 10 second timeout for async tests
+
+---
+
+## Debugging in IntelliJ IDEA
+
+You can debug this project in IntelliJ IDEA (Ultimate recommended for full Node.js support) in multiple ways. Breakpoints work in .ts files because the project uses ts-node with source maps enabled.
+
+Important context:
+- Dev scripts use the ts-node ESM loader and Node’s experimental specifier resolution for .ts imports:
+  - `npm run dev`
+  - `npm run dev:debug` (starts Node inspector on port 9229)
+- tsconfig: module=esnext, moduleResolution=bundler, sourceMap=true, allowImportingTsExtensions=true
+- package.json: "type": "module" (ESM)
+
+### Option A: Use the provided Run/Debug configurations
+This repo includes .run/ configurations IntelliJ can import automatically:
+- Dev (npm): runs `npm run dev`
+- Dev Debug (npm): runs `npm run dev:debug` with Node inspector on 9229
+
+In IDEA:
+1. Open the project folder.
+2. Go to Run > Run… and select "Dev (npm)" or "Dev Debug (npm)".
+3. Set env vars if needed (HOST, PORT). The defaults are HOST=0.0.0.0, PORT=3000.
+4. Click Debug for "Dev Debug (npm)" to attach the debugger and hit breakpoints.
+
+### Option B: Create an NPM configuration manually
+1. Run > Edit Configurations… > + > npm
+2. Package.json: select your project package.json
+3. Command: `run`
+4. Script: `dev:debug` (or `dev` if you don’t need the debugger)
+5. Node interpreter: "project"
+6. Environment variables (optional): HOST=0.0.0.0, PORT=3000
+7. Click Debug to start.
+
+### Option C: Create a Node.js configuration manually
+1. Run > Edit Configurations… > + > Node.js
+2. Node interpreter: "project"
+3. Working directory: project root
+4. JavaScript file: `src/index.ts`
+5. Node parameters:
+   - `--inspect=0.0.0.0:9229 --loader ts-node/esm --no-warnings=ExperimentalWarning --experimental-specifier-resolution=node`
+6. Environment variables (optional): HOST=0.0.0.0, PORT=3000
+7. Click Debug to start.
+
+### Option D: Attach to a running process
+1. Start the app externally with debug enabled:
+   ```bash
+   npm run dev:debug
+   ```
+2. In IDEA: Run > Attach to Node.js/Chrome
+3. Host: `localhost` (or the container/remote host)
+4. Port: `9229`
+5. Click OK; breakpoints in .ts files should be hit.
+
+### Debugging tests (Vitest)
+- Easiest: run tests in UI mode and use browser devtools where applicable:
+  ```bash
+  npm run test:ui
+  ```
+- Or create a Vitest run configuration (if plugin available) or a Node.js config that runs:
+  - JavaScript file: `node_modules/vitest/vitest.mjs`
+  - Application parameters: `run --inspect-brk --coverage` (as desired)
+  - Working directory: project root
+
+### Troubleshooting
+- Breakpoints not hit:
+  - Ensure you’re using the Dev Debug config or Node parameters include `--inspect`.
+  - Confirm Node interpreter in IDEA matches the version used in your terminal.
+  - Make sure tsconfig has `sourceMap: true` (already enabled).
+  - With ESM and ts-node, keep the exact loader flags from the scripts.
+- "Cannot GET /health" while debugging from another device/container:
+  - Default HOST is 0.0.0.0 to listen on all interfaces. Verify your firewall and port mapping.
+- Docker attach:
+  - Expose/forward port 9229: e.g., `-p 9229:9229` and run with `--inspect=0.0.0.0:9229`.
+- Stopping the server:
+  - `npm run stop` will read `.server.pid` and send SIGTERM for graceful shutdown.
+
+---
+
+## License
+
+ISC
+
+# API Inventory
+
+## Development
+
+- Start the server (TypeScript, via ts-node):
+  - npm run dev
+  - For debugging with inspector on 9229: npm run dev:debug
+
+- Stop the currently running server:
+  - npm run stop
+  - This reads the PID from .server.pid and sends SIGTERM for a graceful shutdown.
+
+Notes:
+- The server writes its process ID to .server.pid when it starts. On SIGINT/SIGTERM or normal exit, it will attempt to remove the file.
+- If .server.pid is missing, the stop command will print a helpful message.
+- If you started multiple instances manually, the PID file only tracks the last process that wrote it.

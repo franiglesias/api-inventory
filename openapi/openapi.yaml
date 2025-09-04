@@ -1,0 +1,213 @@
+openapi: 3.1.0
+info:
+  title: Inventory API
+  version: 1.0.0
+  description: |
+    Simple inventory service.
+    
+    Operations:
+    - Health check
+    - Create product
+    - Add units to product stock
+    - Remove units from product stock
+    - List products
+servers:
+  - url: http://localhost:3000
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: Returns 200 OK if the service is healthy.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+  /products:
+    get:
+      summary: List all products
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      summary: Create a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Product with provided SKU already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /products/{sku}/add:
+    post:
+      summary: Add units to a product's stock
+      parameters:
+        - name: sku
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdjustStockRequest'
+      responses:
+        '200':
+          description: Updated product after adding units
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /products/{sku}/remove:
+    post:
+      summary: Remove units from a product's stock
+      parameters:
+        - name: sku
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdjustStockRequest'
+      responses:
+        '200':
+          description: Updated product after removing units
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Invalid request (e.g., removing more than available)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+      required: [status]
+    Product:
+      type: object
+      description: A product tracked by the inventory system
+      properties:
+        id:
+          type: string
+          description: Unique identifier
+          example: "c1a9b9d2-6f20-4e1a-9f8a-1234567890ab"
+        name:
+          type: string
+          example: USB-C Cable
+        description:
+          type: string
+          example: 1m braided cable
+        sku:
+          type: string
+          description: Stock Keeping Unit (unique)
+          example: USBC-1M-BRAIDED
+        stock:
+          type: integer
+          format: int64
+          minimum: 0
+          example: 42
+        minStock:
+          type: integer
+          format: int64
+          minimum: 0
+          example: 5
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [name, description, sku, stock, minStock]
+    CreateProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        sku:
+          type: string
+        initialStock:
+          type: integer
+          format: int64
+          minimum: 0
+        minStock:
+          type: integer
+          format: int64
+          minimum: 0
+      required: [name, description, sku, initialStock, minStock]
+    AdjustStockRequest:
+      type: object
+      properties:
+        units:
+          type: integer
+          format: int64
+          minimum: 1
+      required: [units]
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+          description: Optional machine-readable error code
+      required: [error]

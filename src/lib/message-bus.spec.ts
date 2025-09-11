@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 import {Message} from "./message";
-import {MessageHandler, MessageBus} from "./message.bus";
+import {MessageHandler, MessageBus} from "./message-bus";
 import {UnsupportedCommand} from "./unsupported.command";
 
 class UnknownCommand implements Message {

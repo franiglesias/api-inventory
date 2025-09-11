@@ -532,3 +532,38 @@ Notes:
 - The server writes its process ID to .server.pid when it starts. On SIGINT/SIGTERM or normal exit, it will attempt to remove the file.
 - If .server.pid is missing, the stop command will print a helpful message.
 - If you started multiple instances manually, the PID file only tracks the last process that wrote it.
+
+
+## Continuous Integration: Docker Publish via GitHub Actions
+
+This repository includes a GitHub Actions workflow that builds the Docker image and publishes it to Docker Hub.
+
+Workflow file: .github/workflows/docker-publish.yml
+
+Triggers:
+- On push to main or master: publishes the image tagged as latest and with the branch name and commit SHA.
+- On tag push (e.g., v1.2.3): publishes the image tagged with the Git tag (e.g., v1.2.3).
+- Manual run via workflow_dispatch.
+
+Setup required:
+1. Create Docker Hub access token: Docker Hub > Account Settings > Security > New Access Token.
+2. In your GitHub repository settings, add the following Secrets:
+   - DOCKERHUB_USERNAME: your Docker Hub username.
+   - DOCKERHUB_TOKEN: the Docker Hub access token.
+3. Optionally, add a Repository Variable to override the image repository name:
+   - Variable name: DOCKERHUB_REPOSITORY
+   - Value example: username/api-inventory
+   If not set, the workflow will default to DOCKERHUB_USERNAME/api-inventory.
+
+Image tags produced:
+- latest on the default branch.
+- [branch-name] when pushing non-default branches.
+- [git-tag] when pushing tags (e.g., v1.2.3).
+- sha-[shortsha] for traceability.
+
+Build context:
+- The Dockerfile at the repository root is used for multi-stage builds.
+
+Local testing:
+- docker build -t api-inventory .
+- docker run -p 3000:3000 api-inventory

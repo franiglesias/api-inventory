@@ -12,11 +12,14 @@ import {ForGettingProductsApiAdapter} from "./driving/forGettingProducts/ApiAdap
 import {GetProducts} from "./inventory/driving/forGettingProducts/GetProducts";
 import {GetProductsHandler} from "./inventory/driving/forGettingProducts/GetProductsHandler";
 import {ForStoringProductsMemoryAdapter} from "./driven/forStoringProducts/MemoryAdapter";
+import {RegisterProduct} from "./inventory/driving/forRegisteringProducts/RegisterProduct";
+import {RegisterProductHandler} from "./inventory/driving/forRegisteringProducts/RegisterProductHandler";
+import {ForRegisterProductsApiAdapter} from "./driving/forRegisterProducts/ApiAdapter";
 
 dotenv.config();
 
-function buildApplication(): MessageBusAdapter {
-    const products = new ForStoringProductsMemoryAdapter([
+function productFixtures() {
+    return [
         {
             id: "c1a9b9d2-6f20-4e1a-9f8a-1234567890ab",
             name: "USB-C Cable",
@@ -37,11 +40,16 @@ function buildApplication(): MessageBusAdapter {
             createdAt: new Date("2025-08-24T14:15:22Z"),
             updatedAt: new Date("2025-09-10T14:15:22Z")
         }
-    ])
+    ];
+}
+
+function buildApplication(): MessageBusAdapter {
+    const forStoringProducts = new ForStoringProductsMemoryAdapter(productFixtures())
 
     const messageBus = new MessageBus();
     messageBus.register(GetHealth, new GetHealthHandler())
-    messageBus.register(GetProducts, new GetProductsHandler(products))
+    messageBus.register(GetProducts, new GetProductsHandler(forStoringProducts))
+    messageBus.register(RegisterProduct, new RegisterProductHandler(forStoringProducts))
     return new MessageBusAdapter(messageBus);
 }
 
@@ -49,7 +57,9 @@ const forDispatching = buildApplication();
 
 const forCheckingHealth = new ForCheckingHealthApiAdapter(forDispatching)
 const forGettingProducts = new ForGettingProductsApiAdapter(forDispatching)
+const forRegisteringProducts = new ForRegisterProductsApiAdapter(forDispatching)
 
+inventoryRouter.post("/products", forRegisteringProducts.postProducts.bind(forRegisteringProducts))
 inventoryRouter.get("/products", forGettingProducts.getProducts.bind(forGettingProducts))
 inventoryRouter.get("/health", forCheckingHealth.getHealth.bind(forCheckingHealth))
 
@@ -57,6 +67,9 @@ inventoryRouter.get("/", (request, response) => response.status(200).send("Hello
 
 
 const app = express();
+
+// Parse JSON request bodies
+app.use(express.json());
 
 const PORT = process.env.PORT;
 

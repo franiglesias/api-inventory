@@ -7,6 +7,10 @@ export class ForStoringProductsMemoryAdapter implements ForStoringProducts{
         this.products = products;
     }
 
+    store(productToStore: StoredProduct): void {
+        this.products.push(productToStore);
+    }
+
     retrieveAll(): StoredProduct[] {
         return this.products;
     }

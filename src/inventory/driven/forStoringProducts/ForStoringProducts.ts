@@ -11,4 +11,6 @@ export class StoredProduct {
 
 export interface ForStoringProducts {
     retrieveAll(): StoredProduct[];
+
+    store(productToStore: StoredProduct): void;
 }

@@ -11,17 +11,41 @@ import {ForCheckingHealthApiAdapter} from "./driving/forCheckingHealth/ApiAdapte
 import {ForGettingProductsApiAdapter} from "./driving/forGettingProducts/ApiAdapter";
 import {GetProducts} from "./inventory/driving/forGettingProducts/GetProducts";
 import {GetProductsHandler} from "./inventory/driving/forGettingProducts/GetProductsHandler";
+import {ForStoringProductsMemoryAdapter} from "./driven/forStoringProducts/MemoryAdapter";
 
 dotenv.config();
 
-function buildMessageBusInstance(): MessageBusAdapter {
+function buildApplication(): MessageBusAdapter {
+    const products = new ForStoringProductsMemoryAdapter([
+        {
+            id: "c1a9b9d2-6f20-4e1a-9f8a-1234567890ab",
+            name: "USB-C Cable",
+            description: "1m braided cable",
+            sku: "USBC-1M-BRAIDED",
+            stock: 42,
+            minStock: 5,
+            createdAt: new Date("2019-08-24T14:15:22Z"),
+            updatedAt: new Date("2019-08-24T14:15:22Z")
+        },
+        {
+            id: "f67e3fe2-72b7-4faa-be3f-e272b70faa56",
+            name: "Ethernet Cable",
+            description: "10m braided cable",
+            sku: "ETHC-10M-BRAIDED",
+            stock: 30,
+            minStock: 5,
+            createdAt: new Date("2025-08-24T14:15:22Z"),
+            updatedAt: new Date("2025-09-10T14:15:22Z")
+        }
+    ])
+
     const messageBus = new MessageBus();
     messageBus.register(GetHealth, new GetHealthHandler())
-    messageBus.register(GetProducts, new GetProductsHandler())
+    messageBus.register(GetProducts, new GetProductsHandler(products))
     return new MessageBusAdapter(messageBus);
 }
 
-const forDispatching = buildMessageBusInstance();
+const forDispatching = buildApplication();
 
 const forCheckingHealth = new ForCheckingHealthApiAdapter(forDispatching)
 const forGettingProducts = new ForGettingProductsApiAdapter(forDispatching)

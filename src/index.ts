@@ -3,6 +3,7 @@ import express from "express";
 import dotenv from "dotenv";
 import {GetHealth} from "./inventory/driving/forCheckingHealth/GetHealth";
 import {GetHealthHandler} from "./inventory/driving/forCheckingHealth/GetHealthHandler";
+import {ForCheckingHealthApiAdapter} from "./driving/forCheckingHealth/ApiAdapter";
 
 
 dotenv.config();
@@ -16,18 +17,8 @@ app.get("/", (request, response) => {
 });
 
 app.get("/health", (request, response) => {
-    const getHealth = new GetHealth()
-    const getHealthHandler = new GetHealthHandler()
-    if (getHealthHandler.handle(getHealth)) {
-        response.status(200).json({
-            status: 'ok'
-        });
-    }
-    response.status(500).json({
-        error: "Internal Server Error. App is not working.",
-        code: "500"
-    })
-
+    const controller = new ForCheckingHealthApiAdapter();
+    controller.getHealth(request, response);
 })
 
 app.listen(PORT, () => {

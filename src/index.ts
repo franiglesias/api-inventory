@@ -2,7 +2,7 @@ import express from "express";
 
 import dotenv from "dotenv";
 
-import inventoryRouter from './router/router'
+import inventoryRouter from './driving/router/router'
 
 dotenv.config();
 

@@ -1,5 +1,5 @@
 import express from "express";
-import {ForCheckingHealthApiAdapter} from "../driving/forCheckingHealth/ApiAdapter";
+import {ForCheckingHealthApiAdapter} from "../forCheckingHealth/ApiAdapter";
 
 const router = express.Router();
 

@@ -11,7 +11,12 @@ export class ForStoringProductsMemoryAdapter implements ForStoringProducts {
   }
 
   store(productToStore: StoredProduct): void {
-    this.products.push(productToStore)
+    const index = this.products.findIndex((p) => p.id === productToStore.id)
+    if (index !== -1) {
+      this.products[index] = productToStore
+    } else {
+      this.products.push(productToStore)
+    }
   }
 
   retrieveAll(): StoredProduct[] {

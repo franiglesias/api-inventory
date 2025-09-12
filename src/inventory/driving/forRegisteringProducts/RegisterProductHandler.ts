@@ -13,7 +13,7 @@ export class RegisterProductHandler implements MessageHandler<RegisterProduct> {
         this.forStoringProducts = forStoringProducts;
     }
 
-    public handle(registerProduct: RegisterProduct) {
+    public handle(registerProduct: RegisterProduct): StoredProduct {
         const skuExists = this.forStoringProducts.retrieveAll().some(product => product.sku === registerProduct.sku)
 
         if (skuExists)

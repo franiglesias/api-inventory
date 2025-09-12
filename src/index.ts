@@ -15,6 +15,9 @@ import {ForStoringProductsMemoryAdapter} from "./driven/forStoringProducts/Memor
 import {RegisterProduct} from "./inventory/driving/forRegisteringProducts/RegisterProduct";
 import {RegisterProductHandler} from "./inventory/driving/forRegisteringProducts/RegisterProductHandler";
 import {ForRegisterProductsApiAdapter} from "./driving/forRegisterProducts/ApiAdapter";
+import {ForUpdatingStockApiAdapter} from "./driving/forUpdatingStock/ApiAdapter";
+import {AddUnits} from "./inventory/driving/forUpdatingStock/AddUnits";
+import {AddUnitsHandler} from "./inventory/driving/forUpdatingStock/AddUnitsHandler";
 
 dotenv.config();
 
@@ -50,17 +53,22 @@ function buildApplication(): MessageBusAdapter {
     messageBus.register(GetHealth, new GetHealthHandler())
     messageBus.register(GetProducts, new GetProductsHandler(forStoringProducts))
     messageBus.register(RegisterProduct, new RegisterProductHandler(forStoringProducts))
+    messageBus.register(AddUnits, new AddUnitsHandler(forStoringProducts))
     return new MessageBusAdapter(messageBus);
 }
 
 const forDispatching = buildApplication();
 
-const forCheckingHealth = new ForCheckingHealthApiAdapter(forDispatching)
-const forGettingProducts = new ForGettingProductsApiAdapter(forDispatching)
-const forRegisteringProducts = new ForRegisterProductsApiAdapter(forDispatching)
+const forUpdatingStock = new ForUpdatingStockApiAdapter(forDispatching)
+inventoryRouter.post("/products/:sku/add", forUpdatingStock.postAddUnits.bind(forUpdatingStock))
 
+const forRegisteringProducts = new ForRegisterProductsApiAdapter(forDispatching)
 inventoryRouter.post("/products", forRegisteringProducts.postProducts.bind(forRegisteringProducts))
+
+const forGettingProducts = new ForGettingProductsApiAdapter(forDispatching)
 inventoryRouter.get("/products", forGettingProducts.getProducts.bind(forGettingProducts))
+
+const forCheckingHealth = new ForCheckingHealthApiAdapter(forDispatching)
 inventoryRouter.get("/health", forCheckingHealth.getHealth.bind(forCheckingHealth))
 
 inventoryRouter.get("/", (request, response) => response.status(200).send("Hello World"));

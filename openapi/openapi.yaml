@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: |
     Simple inventory service.
-    
+
     Operations:
     - Health check
     - Create product
@@ -19,30 +19,30 @@ paths:
       summary: Health check
       description: Returns 200 OK if the service is healthy.
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Health'
-        '500':
+                $ref: "#/components/schemas/Health"
+        "500":
           description: ERROR
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /products:
     get:
       summary: List all products
       responses:
-        '200':
+        "200":
           description: List of products
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Product'
+                  $ref: "#/components/schemas/Product"
     post:
       summary: Create a new product
       requestBody:
@@ -50,26 +50,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateProductRequest'
+              $ref: "#/components/schemas/CreateProductRequest"
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
-        '400':
+                $ref: "#/components/schemas/Product"
+        "400":
           description: Invalid input
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-        '409':
+                $ref: "#/components/schemas/Error"
+        "409":
           description: Product with provided SKU already exists
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /products/{sku}/add:
     post:
       summary: Add units to a product's stock
@@ -84,26 +84,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AdjustStockRequest'
+              $ref: "#/components/schemas/AdjustStockRequest"
       responses:
-        '200':
+        "200":
           description: Updated product after adding units
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
-        '404':
+                $ref: "#/components/schemas/Product"
+        "404":
           description: Product not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-        '400':
+                $ref: "#/components/schemas/Error"
+        "400":
           description: Invalid request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /products/{sku}/remove:
     post:
       summary: Remove units from a product's stock
@@ -118,26 +118,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AdjustStockRequest'
+              $ref: "#/components/schemas/AdjustStockRequest"
       responses:
-        '200':
+        "200":
           description: Updated product after removing units
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
-        '404':
+                $ref: "#/components/schemas/Product"
+        "404":
           description: Product not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-        '400':
+                $ref: "#/components/schemas/Error"
+        "400":
           description: Invalid request (e.g., removing more than available)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Health:

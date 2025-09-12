@@ -1,17 +1,20 @@
-import {ForStoringProducts, StoredProduct} from "../../inventory/driven/forStoringProducts/ForStoringProducts";
+import {
+  ForStoringProducts,
+  StoredProduct,
+} from "../../inventory/driven/forStoringProducts/ForStoringProducts"
 
-export class ForStoringProductsMemoryAdapter implements ForStoringProducts{
-    private readonly products: StoredProduct[] = [];
+export class ForStoringProductsMemoryAdapter implements ForStoringProducts {
+  private readonly products: StoredProduct[] = []
 
-    constructor(products: StoredProduct[]) {
-        this.products = products;
-    }
+  constructor(products: StoredProduct[]) {
+    this.products = products
+  }
 
-    store(productToStore: StoredProduct): void {
-        this.products.push(productToStore);
-    }
+  store(productToStore: StoredProduct): void {
+    this.products.push(productToStore)
+  }
 
-    retrieveAll(): StoredProduct[] {
-        return this.products;
-    }
+  retrieveAll(): StoredProduct[] {
+    return this.products
+  }
 }

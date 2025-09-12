@@ -17,11 +17,13 @@ npm install
 ## Available Commands
 
 ### Development
+
 - `npm run dev` - Start development server using Node's ts-node ESM loader
 - `npm run build` - Compile TypeScript to JavaScript
 - `npm run start` - Start production server (requires build first)
 
 ### Testing with Vitest
+
 - `npm test` - Run tests in watch mode
 - `npm run test:run` - Run tests once and exit
 - `npm run test:watch` - Run tests in watch mode (explicit)
@@ -29,6 +31,7 @@ npm install
 - `npm run test:coverage` - Run tests with coverage report
 
 ### Docker
+
 - `npm run docker:build` - Build Docker image
 - `npm run docker:run` - Run Docker container on port 3000
 - `npm run compose:up` - Start with Docker Compose (production)
@@ -58,6 +61,7 @@ api-inventory/
 This project uses **Vitest** as the testing framework, which provides:
 
 ### Features
+
 - ⚡ **Fast**: Built on Vite for lightning-fast test execution
 - 🔧 **TypeScript Support**: Native TypeScript support without additional configuration
 - 📊 **Coverage Reports**: Built-in code coverage with V8 provider
@@ -84,6 +88,7 @@ npm run test:ui
 ### Test File Patterns
 
 Vitest will automatically find test files in these patterns:
+
 - `src/**/*.{test,spec}.{js,ts}`
 - `test/**/*.{test,spec}.{js,ts}`
 - `**/__tests__/**/*.{js,ts}`
@@ -91,6 +96,7 @@ Vitest will automatically find test files in these patterns:
 ### Coverage Reports
 
 Coverage reports are generated in multiple formats:
+
 - **Terminal**: Displayed in console
 - **JSON**: `./coverage/test-results.json`
 - **HTML**: `./coverage/test-results.html`
@@ -102,6 +108,7 @@ This project includes full Docker support for both development and production en
 ### Docker Files
 
 The project includes the following Docker-related files:
+
 - `Dockerfile` - Multi-stage build for development and production
 - `docker-compose.yml` - Orchestration for different environments
 - `.dockerignore` - Excludes unnecessary files from Docker build context
@@ -109,10 +116,12 @@ The project includes the following Docker-related files:
 ### Docker Commands (NPM Scripts)
 
 **Building and Running:**
+
 - `npm run docker:build` - Build production Docker image
 - `npm run docker:run` - Run production container on port 3000
 
 **Docker Compose:**
+
 - `npm run compose:up` - Start production service
 - `npm run compose:up:dev` - Start development environment with hot reload
 - `npm run compose:down` - Stop all services
@@ -121,32 +130,39 @@ The project includes the following Docker-related files:
 ### Quick Start with Docker
 
 **Development with hot reload:**
+
 ```bash
 npm run compose:up:dev
 ```
+
 Access the API at: http://localhost:3000
 
 **Production deployment:**
+
 ```bash
 npm run compose:up
 ```
+
 Access the API at: http://localhost:3000
 
 ### Manual Docker Commands
 
 **Build and run production:**
+
 ```bash
 docker build --target production -t api-inventory:prod .
 docker run -p 3000:3000 api-inventory:prod
 ```
 
 **Build and run development:**
+
 ```bash
 docker build --target development -t api-inventory:dev .
 docker run -p 3000:3000 -v $(pwd):/app -v /app/node_modules api-inventory:dev
 ```
 
 **Using Docker Compose:**
+
 ```bash
 # Development
 docker-compose --profile dev up
@@ -167,6 +183,7 @@ The Dockerfile uses a multi-stage build:
 3. **Development stage**: Full development environment with hot reload
 
 **Production optimizations:**
+
 - Only production dependencies installed
 - Non-root user for security
 - Health check endpoint
@@ -178,16 +195,19 @@ The Dockerfile uses a multi-stage build:
 ### Local Development
 
 1. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 2. **Start development server:**
+
    ```bash
    npm run dev
    ```
 
 3. **Run tests:**
+
    ```bash
    npm test
    ```
@@ -200,6 +220,7 @@ The Dockerfile uses a multi-stage build:
 ### Docker Development
 
 1. **Start with Docker Compose:**
+
    ```bash
    npm run compose:up:dev
    ```
@@ -212,12 +233,14 @@ The Dockerfile uses a multi-stage build:
 ### Production Build
 
 **Local build:**
+
 ```bash
 npm run build
 npm run start
 ```
 
 **Docker production:**
+
 ```bash
 npm run compose:up
 ```
@@ -225,6 +248,7 @@ npm run compose:up
 ## Testing Strategy
 
 ### Test Types
+
 - **Unit Tests**: Test individual functions and classes
 - **Integration Tests**: Test API endpoints and database interactions
 - **Coverage**: Maintain high code coverage with detailed reports
@@ -235,20 +259,21 @@ Create test files alongside your source code or in the `test/` directory:
 
 ```typescript
 // Example: src/inventory.test.ts
-import { describe, it, expect } from 'vitest';
-import { Inventory } from './inventory';
+import { describe, it, expect } from "vitest"
+import { Inventory } from "./inventory"
 
-describe('Inventory', () => {
-  it('should create an empty inventory', () => {
-    const inventory = new Inventory();
-    expect(inventory.getProducts()).toHaveLength(0);
-  });
-});
+describe("Inventory", () => {
+  it("should create an empty inventory", () => {
+    const inventory = new Inventory()
+    expect(inventory.getProducts()).toHaveLength(0)
+  })
+})
 ```
 
 ### Test Configuration
 
 The project uses `vitest.config.ts` for configuration:
+
 - **Environment**: Node.js environment for API testing
 - **Coverage**: V8 provider with HTML and JSON reports
 - **Globals**: Global test functions available without imports
@@ -257,9 +282,10 @@ The project uses `vitest.config.ts` for configuration:
 
 ## API Endpoints
 
-*Note: Add your specific API endpoints documentation here as you develop them.*
+_Note: Add your specific API endpoints documentation here as you develop them._
 
 ### Health Check
+
 - `GET /health` - Returns API health status (used by Docker health check)
 
 ## Environment Variables
@@ -277,6 +303,7 @@ PORT=3000
 ### Common Issues
 
 **Port already in use:**
+
 ```bash
 # Check what's using port 3000
 lsof -i :3000
@@ -286,6 +313,7 @@ kill -9 <PID>
 ```
 
 **Docker build issues:**
+
 ```bash
 # Clean Docker cache
 docker system prune
@@ -295,6 +323,7 @@ docker-compose build --no-cache
 ```
 
 **Test issues:**
+
 ```bash
 # Clear Vitest cache
 npx vitest --run --reporter=verbose --clearCache
@@ -303,6 +332,7 @@ npx vitest --run --reporter=verbose --clearCache
 ### Development Server Issues
 
 If the development server doesn't start:
+
 1. Check if port 3000 is available
 2. Verify all dependencies are installed
 3. Check for TypeScript compilation errors
@@ -311,6 +341,7 @@ If the development server doesn't start:
 ### Docker Issues
 
 If Docker containers fail to start:
+
 1. Check Docker Desktop is running
 2. Verify the Dockerfile syntax
 3. Check for port conflicts
@@ -334,6 +365,7 @@ ISC
 ## Development
 
 - Start the server (TypeScript, via ts-node):
+
   - npm run dev
   - For debugging with inspector on 9229: npm run dev:debug
 
@@ -342,31 +374,38 @@ ISC
   - This reads the PID from .server.pid and sends SIGTERM for a graceful shutdown.
 
 Notes:
-- The server writes its process ID to .server.pid when it starts. On SIGINT/SIGTERM or normal exit, it will attempt to remove the file.
+
+- The server writes its process ID to .server.pid when it starts. On SIGINT/SIGTERM or normal exit,
+  it will attempt to remove the file.
 - If .server.pid is missing, the stop command will print a helpful message.
-- If you started multiple instances manually, the PID file only tracks the last process that wrote it.
+- If you started multiple instances manually, the PID file only tracks the last process that wrote
+  it.
 
 # API Inventory
 
 A TypeScript Node.js API starter using Express and Vitest.
 
 ## Prerequisites
+
 - Node.js >= 18 (LTS or newer)
 - npm (or pnpm/yarn)
 
 ## Getting Started
 
 1. Install dependencies:
+
    ```bash
    npm install
    ```
 
 2. Start in dev mode (TypeScript via ts-node loader):
+
    ```bash
    npm run dev
    ```
 
 3. Run tests:
+
    ```bash
    npm test
    ```
@@ -379,6 +418,7 @@ A TypeScript Node.js API starter using Express and Vitest.
 ### Docker Development
 
 1. Start with Docker Compose:
+
    ```bash
    npm run compose:up:dev
    ```
@@ -391,12 +431,14 @@ A TypeScript Node.js API starter using Express and Vitest.
 ### Production Build
 
 **Local build:**
+
 ```bash
 npm run build
 npm run start
 ```
 
 **Docker production:**
+
 ```bash
 npm run compose:up
 ```
@@ -404,6 +446,7 @@ npm run compose:up
 ## Testing Strategy
 
 ### Test Types
+
 - **Unit Tests**: Test individual functions and classes
 - **Integration Tests**: Test API endpoints and database interactions
 - **Coverage**: Maintain high code coverage with detailed reports
@@ -414,20 +457,21 @@ Create test files alongside your source code or in the `test/` directory:
 
 ```typescript
 // Example: src/inventory.test.ts
-import { describe, it, expect } from 'vitest';
-import { Inventory } from './inventory';
+import { describe, it, expect } from "vitest"
+import { Inventory } from "./inventory"
 
-describe('Inventory', () => {
-  it('should create an empty inventory', () => {
-    const inventory = new Inventory();
-    expect(inventory.getProducts()).toHaveLength(0);
-  });
-});
+describe("Inventory", () => {
+  it("should create an empty inventory", () => {
+    const inventory = new Inventory()
+    expect(inventory.getProducts()).toHaveLength(0)
+  })
+})
 ```
 
 ### Test Configuration
 
 The project uses `vitest.config.ts` for configuration:
+
 - **Environment**: Node.js environment for API testing
 - **Coverage**: V8 provider with HTML and JSON reports
 - **Globals**: Global test functions available without imports
@@ -438,27 +482,35 @@ The project uses `vitest.config.ts` for configuration:
 
 ## Debugging in IntelliJ IDEA
 
-You can debug this project in IntelliJ IDEA (Ultimate recommended for full Node.js support) in multiple ways. Breakpoints work in .ts files because the project uses ts-node with source maps enabled.
+You can debug this project in IntelliJ IDEA (Ultimate recommended for full Node.js support) in
+multiple ways. Breakpoints work in .ts files because the project uses ts-node with source maps
+enabled.
 
 Important context:
-- Dev scripts use the ts-node ESM loader and Node’s experimental specifier resolution for .ts imports:
+
+- Dev scripts use the ts-node ESM loader and Node’s experimental specifier resolution for .ts
+  imports:
   - `npm run dev`
   - `npm run dev:debug` (starts Node inspector on port 9229)
 - tsconfig: module=esnext, moduleResolution=bundler, sourceMap=true, allowImportingTsExtensions=true
 - package.json: "type": "module" (ESM)
 
 ### Option A: Use the provided Run/Debug configurations
+
 This repo includes .run/ configurations IntelliJ can import automatically:
+
 - Dev (npm): runs `npm run dev`
 - Dev Debug (npm): runs `npm run dev:debug` with Node inspector on 9229
 
 In IDEA:
+
 1. Open the project folder.
 2. Go to Run > Run… and select "Dev (npm)" or "Dev Debug (npm)".
 3. Set env vars if needed (HOST, PORT). The defaults are HOST=0.0.0.0, PORT=3000.
 4. Click Debug for "Dev Debug (npm)" to attach the debugger and hit breakpoints.
 
 ### Option B: Create an NPM configuration manually
+
 1. Run > Edit Configurations… > + > npm
 2. Package.json: select your project package.json
 3. Command: `run`
@@ -468,6 +520,7 @@ In IDEA:
 7. Click Debug to start.
 
 ### Option C: Create a Node.js configuration manually
+
 1. Run > Edit Configurations… > + > Node.js
 2. Node interpreter: "project"
 3. Working directory: project root
@@ -478,6 +531,7 @@ In IDEA:
 7. Click Debug to start.
 
 ### Option D: Attach to a running process
+
 1. Start the app externally with debug enabled:
    ```bash
    npm run dev:debug
@@ -488,6 +542,7 @@ In IDEA:
 5. Click OK; breakpoints in .ts files should be hit.
 
 ### Debugging tests (Vitest)
+
 - Easiest: run tests in UI mode and use browser devtools where applicable:
   ```bash
   npm run test:ui
@@ -498,6 +553,7 @@ In IDEA:
   - Working directory: project root
 
 ### Troubleshooting
+
 - Breakpoints not hit:
   - Ensure you’re using the Dev Debug config or Node parameters include `--inspect`.
   - Confirm Node interpreter in IDEA matches the version used in your terminal.
@@ -521,6 +577,7 @@ ISC
 ## Development
 
 - Start the server (TypeScript, via ts-node):
+
   - npm run dev
   - For debugging with inspector on 9229: npm run dev:debug
 
@@ -529,41 +586,50 @@ ISC
   - This reads the PID from .server.pid and sends SIGTERM for a graceful shutdown.
 
 Notes:
-- The server writes its process ID to .server.pid when it starts. On SIGINT/SIGTERM or normal exit, it will attempt to remove the file.
-- If .server.pid is missing, the stop command will print a helpful message.
-- If you started multiple instances manually, the PID file only tracks the last process that wrote it.
 
+- The server writes its process ID to .server.pid when it starts. On SIGINT/SIGTERM or normal exit,
+  it will attempt to remove the file.
+- If .server.pid is missing, the stop command will print a helpful message.
+- If you started multiple instances manually, the PID file only tracks the last process that wrote
+  it.
 
 ## Continuous Integration: Docker Publish via GitHub Actions
 
-This repository includes a GitHub Actions workflow that builds the Docker image and publishes it to Docker Hub.
+This repository includes a GitHub Actions workflow that builds the Docker image and publishes it to
+Docker Hub.
 
 Workflow file: .github/workflows/docker-publish.yml
 
 Triggers:
-- On push to main or master: publishes the image tagged as latest and with the branch name and commit SHA.
+
+- On push to main or master: publishes the image tagged as latest and with the branch name and
+  commit SHA.
 - On tag push (e.g., v1.2.3): publishes the image tagged with the Git tag (e.g., v1.2.3).
 - Manual run via workflow_dispatch.
 
 Setup required:
+
 1. Create Docker Hub access token: Docker Hub > Account Settings > Security > New Access Token.
 2. In your GitHub repository settings, add the following Secrets:
    - DOCKERHUB_USERNAME: your Docker Hub username.
    - DOCKERHUB_TOKEN: the Docker Hub access token.
 3. Optionally, add a Repository Variable to override the image repository name:
    - Variable name: DOCKERHUB_REPOSITORY
-   - Value example: username/api-inventory
-   If not set, the workflow will default to DOCKERHUB_USERNAME/api-inventory.
+   - Value example: username/api-inventory If not set, the workflow will default to
+     DOCKERHUB_USERNAME/api-inventory.
 
 Image tags produced:
+
 - latest on the default branch.
 - [branch-name] when pushing non-default branches.
 - [git-tag] when pushing tags (e.g., v1.2.3).
 - sha-[shortsha] for traceability.
 
 Build context:
+
 - The Dockerfile at the repository root is used for multi-stage builds.
 
 Local testing:
+
 - docker build -t api-inventory .
 - docker run -p 3000:3000 api-inventory

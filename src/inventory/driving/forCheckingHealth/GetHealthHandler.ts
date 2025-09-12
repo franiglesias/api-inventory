@@ -1,7 +1,7 @@
-import {GetHealth} from "./GetHealth";
+import { GetHealth } from "./GetHealth"
 
 export class GetHealthHandler {
-    public handle(_getHealth: GetHealth): boolean {
-        return true;
-    }
+  public handle(_getHealth: GetHealth): boolean {
+    return true
+  }
 }

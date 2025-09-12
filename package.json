@@ -11,6 +11,7 @@
     "build": "npm run clean && tsc",
     "start": "node dist/index.js",
     "test": "vitest",
+    "test:api": "vitest test/e2e",
     "test:run": "vitest run",
     "test:watch": "vitest --watch",
     "test:ui": "vitest --ui",

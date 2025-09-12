@@ -3,7 +3,7 @@ export class DuplicatedProductSku implements Error {
   name: string
 
   constructor(sku: string) {
-    this.message = `SKU '${sku}' already exists`
+    this.message = `SKU \'${sku}\' already exists`
     this.name = "DuplicatedProductSKu"
   }
 }

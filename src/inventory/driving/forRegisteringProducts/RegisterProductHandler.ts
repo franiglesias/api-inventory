@@ -3,6 +3,7 @@ import {RegisterProduct} from "./RegisterProduct";
 import {MessageHandler} from "../../driven/forDispatchingMessages/ForDispatchingMessages";
 import {Product} from "../../Product";
 import {v4} from "uuid";
+import {DuplicatedProductSku} from "./DuplicatedProductSKu";
 
 export class RegisterProductHandler implements MessageHandler<RegisterProduct> {
     private forStoringProducts: ForStoringProducts
@@ -13,6 +14,11 @@ export class RegisterProductHandler implements MessageHandler<RegisterProduct> {
     }
 
     public handle(registerProduct: RegisterProduct) {
+        const skuExists = this.forStoringProducts.retrieveAll().some(product => product.sku === registerProduct.sku)
+
+        if (skuExists)
+            throw new DuplicatedProductSku(registerProduct.sku)
+
         const product = Product.register(
             this.generateId(),
             registerProduct.name,

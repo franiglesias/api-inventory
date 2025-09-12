@@ -2,6 +2,8 @@ import {ForDispatchingMessages} from "../../inventory/driven/forDispatchingMessa
 import {Request, Response} from "express-serve-static-core";
 import {ParsedQs} from "qs";
 import {RegisterProduct} from "../../inventory/driving/forRegisteringProducts/RegisterProduct";
+import {StoredProduct} from "../../inventory/driven/forStoringProducts/ForStoringProducts";
+import {DuplicatedProductSKu} from "../../inventory/driving/forRegisteringProducts/DuplicatedProductSKu";
 
 export class ForRegisterProductsApiAdapter {
     private forDispatching: ForDispatchingMessages;
@@ -12,20 +14,45 @@ export class ForRegisterProductsApiAdapter {
 
     public postProducts(req: Request<{}, any, any, ParsedQs, Record<string, any>>, response: Response<any, Record<string, any>, number>) {
         const body = req.body || {};
-        const {name, description, sku, initialStock, minStock} = body;
 
-        if (!name || !sku) {
-            return response.status(400).json({message: "Missing required fields: name and sku"});
+        const productFields = {
+            name: body.name,
+            description: body.description,
+            sku: body.sku,
+            initialStock: body.initialStock,
+            minStock: body.minStock
+        };
+
+        const emptyFields = Object.entries(productFields)
+            .filter(([_, value]) => !value)
+            .map(([key]) => key).filter(field => field !== 'description');
+
+
+        if (emptyFields.length > 0) {
+            return response.status(400).json({
+                error: `Missing required fields: ${emptyFields.join(', ')}`,
+                code: 400
+            });
         }
 
         const command = new RegisterProduct()
-        command.name = name;
-        command.description = description;
-        command.sku = sku;
-        command.initialStock = initialStock;
-        command.minStock = minStock;
+        command.name = productFields.name;
+        command.description = productFields.description;
+        command.sku = productFields.sku;
+        command.initialStock = productFields.initialStock;
+        command.minStock = productFields.minStock;
 
-        const product = this.forDispatching.dispatch(command);
-        response.status(201).json(product)
+        try {
+            const product = this.forDispatching.dispatch(command);
+            response.status(201).json(product)
+
+        } catch (e) {
+            if (e instanceof DuplicatedProductSKu) {
+                return response.status(409).json({
+                    error: e.message,
+                    code: 409
+                });
+            }
+        }
     }
 }

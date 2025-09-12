@@ -8,6 +8,11 @@ on:
 permissions:
   contents: read
 
+# Avoid duplicate/racing runs for the same branch/PR; cancel older ones.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest

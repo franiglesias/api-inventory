@@ -18,6 +18,8 @@ import { ForRegisterProductsApiAdapter } from "./driving/forRegisterProducts/Api
 import { ForUpdatingStockApiAdapter } from "./driving/forUpdatingStock/ApiAdapter"
 import { AddUnits } from "./inventory/driving/forUpdatingStock/AddUnits"
 import { AddUnitsHandler } from "./inventory/driving/forUpdatingStock/AddUnitsHandler"
+import { RemoveUnits } from "./inventory/driving/forUpdatingStock/RemoveUnits"
+import { RemoveUnitsHandler } from "./inventory/driving/forUpdatingStock/RemoveUnitsHandler"
 
 dotenv.config()
 
@@ -54,6 +56,7 @@ function buildApplication(): MessageBusAdapter {
   messageBus.register(GetProducts, new GetProductsHandler(forStoringProducts))
   messageBus.register(RegisterProduct, new RegisterProductHandler(forStoringProducts))
   messageBus.register(AddUnits, new AddUnitsHandler(forStoringProducts))
+  messageBus.register(RemoveUnits, new RemoveUnitsHandler(forStoringProducts))
   return new MessageBusAdapter(messageBus)
 }
 
@@ -61,6 +64,10 @@ const forDispatching = buildApplication()
 
 const forUpdatingStock = new ForUpdatingStockApiAdapter(forDispatching)
 inventoryRouter.post("/products/:sku/add", forUpdatingStock.postAddUnits.bind(forUpdatingStock))
+inventoryRouter.post(
+  "/products/:sku/remove",
+  forUpdatingStock.postRemoveUnits.bind(forUpdatingStock),
+)
 
 const forRegisteringProducts = new ForRegisterProductsApiAdapter(forDispatching)
 inventoryRouter.post("/products", forRegisteringProducts.postProducts.bind(forRegisteringProducts))

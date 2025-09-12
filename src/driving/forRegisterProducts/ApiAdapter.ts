@@ -2,8 +2,7 @@ import {ForDispatchingMessages} from "../../inventory/driven/forDispatchingMessa
 import {Request, Response} from "express-serve-static-core";
 import {ParsedQs} from "qs";
 import {RegisterProduct} from "../../inventory/driving/forRegisteringProducts/RegisterProduct";
-import {StoredProduct} from "../../inventory/driven/forStoringProducts/ForStoringProducts";
-import {DuplicatedProductSKu} from "../../inventory/driving/forRegisteringProducts/DuplicatedProductSKu";
+import {DuplicatedProductSku} from "../../inventory/driving/forRegisteringProducts/DuplicatedProductSku";
 
 export class ForRegisterProductsApiAdapter {
     private forDispatching: ForDispatchingMessages;
@@ -47,7 +46,7 @@ export class ForRegisterProductsApiAdapter {
             response.status(201).json(product)
 
         } catch (e) {
-            if (e instanceof DuplicatedProductSKu) {
+            if (e instanceof DuplicatedProductSku) {
                 return response.status(409).json({
                     error: e.message,
                     code: 409

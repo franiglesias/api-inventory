@@ -34,12 +34,13 @@ export class ForRegisterProductsApiAdapter {
             });
         }
 
-        const command = new RegisterProduct()
-        command.name = productFields.name;
-        command.description = productFields.description;
-        command.sku = productFields.sku;
-        command.initialStock = productFields.initialStock;
-        command.minStock = productFields.minStock;
+        const command = new RegisterProduct(
+            productFields.name,
+            productFields.description,
+            productFields.sku,
+            productFields.initialStock,
+            productFields.minStock,
+        )
 
         try {
             const product = this.forDispatching.dispatch(command);

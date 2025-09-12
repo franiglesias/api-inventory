@@ -1,3 +1,3 @@
-import {Message} from "../../../lib/message";
+import {Message} from "../../driven/forDispatchingMessages/ForDispatchingMessages";
 
 export class GetProducts implements Message{}

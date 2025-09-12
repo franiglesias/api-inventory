@@ -4,6 +4,6 @@ export interface ForDispatchingMessages {
 
 export interface Message {}
 
-export interface MessageHandler<T> {
+export interface MessageHandler<T extends Message> {
     handle(command: T): any;
 }

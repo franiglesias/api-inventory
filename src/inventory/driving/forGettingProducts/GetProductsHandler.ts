@@ -10,7 +10,7 @@ export class GetProductsHandler {
         this.forStoringProducts = forStoringProducts;
     }
 
-    public handle(getProducts: GetProducts): Product[] {
+    public handle(_getProducts: GetProducts): Product[] {
         console.log('GetProductsHandler.handle()')
         let storedProducts: StoredProduct[] = this.forStoringProducts.retrieveAll();
 

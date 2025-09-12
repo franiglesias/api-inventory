@@ -1,4 +1,6 @@
-export class StoredProduct {
+import {Message} from "../forDispatchingMessages/ForDispatchingMessages";
+
+export class StoredProduct implements Message{
     public id!: string;
     public name!: string
     public description!: string

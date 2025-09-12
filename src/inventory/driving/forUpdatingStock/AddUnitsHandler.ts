@@ -3,7 +3,7 @@ import {ForStoringProducts, StoredProduct} from "../../driven/forStoringProducts
 import {AddUnits} from "./AddUnits";
 import {SkuNotFound} from "./SkuNotFound";
 
-export class AddUnitsHandler implements MessageHandler<AddUnitsHandler> {
+export class AddUnitsHandler implements MessageHandler<AddUnits> {
     private forStoringProducts: ForStoringProducts
 
     constructor(forStoringProducts: ForStoringProducts) {

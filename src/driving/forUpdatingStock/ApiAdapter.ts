@@ -4,7 +4,7 @@ import { ParsedQs } from "qs"
 import { AddUnits } from "../../inventory/driving/forUpdatingStock/AddUnits"
 import { SkuNotFound } from "../../inventory/driving/forUpdatingStock/SkuNotFound"
 import { RemoveUnits } from "../../inventory/driving/forUpdatingStock/RemoveUnits"
-import {NegativeStock} from "../../inventory/driving/forUpdatingStock/NegativeStock";
+import { NegativeStock } from "../../inventory/driving/forUpdatingStock/NegativeStock"
 
 export class ForUpdatingStockApiAdapter {
   private forDispatching: ForDispatchingMessages
@@ -94,7 +94,7 @@ export class ForUpdatingStockApiAdapter {
         response.status(404).json({ error: error.message, code: 404 })
       }
       if (error instanceof NegativeStock) {
-          response.status(400).json({ error: error.message, code: 400 })
+        response.status(400).json({ error: error.message, code: 400 })
       }
       response
         .status(500)

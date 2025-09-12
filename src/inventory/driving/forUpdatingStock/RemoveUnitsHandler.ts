@@ -1,9 +1,9 @@
-import {MessageHandler} from "../../driven/forDispatchingMessages/ForDispatchingMessages"
-import {RemoveUnits} from "./RemoveUnits"
-import {ForStoringProductsMemoryAdapter} from "../../../driven/forStoringProducts/MemoryAdapter"
-import {StoredProduct} from "../../driven/forStoringProducts/ForStoringProducts"
-import {SkuNotFound} from "./SkuNotFound"
-import {NegativeStock} from "./NegativeStock";
+import { MessageHandler } from "../../driven/forDispatchingMessages/ForDispatchingMessages"
+import { RemoveUnits } from "./RemoveUnits"
+import { ForStoringProductsMemoryAdapter } from "../../../driven/forStoringProducts/MemoryAdapter"
+import { StoredProduct } from "../../driven/forStoringProducts/ForStoringProducts"
+import { SkuNotFound } from "./SkuNotFound"
+import { NegativeStock } from "./NegativeStock"
 
 export class RemoveUnitsHandler implements MessageHandler<RemoveUnits> {
   private forStoringProducts: ForStoringProductsMemoryAdapter
@@ -18,11 +18,11 @@ export class RemoveUnitsHandler implements MessageHandler<RemoveUnits> {
     })
 
     if (!product) {
-        throw new SkuNotFound(removeUnits.sku)
+      throw new SkuNotFound(removeUnits.sku)
     }
 
     if (product.stock - removeUnits.units < 0) {
-        throw new NegativeStock(product.sku, product.stock)
+      throw new NegativeStock(product.sku, product.stock)
     }
 
     product.stock -= removeUnits.units

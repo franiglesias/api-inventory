@@ -23,12 +23,13 @@ export class ForRegisterProductsApiAdapter {
       sku: body.sku,
       initialStock: body.initialStock,
       minStock: body.minStock,
+      imageUrl: body.imageUrl,
     }
 
     const emptyFields = Object.entries(productFields)
       .filter(([_, value]) => !value)
       .map(([key]) => key)
-      .filter((field) => field !== "description")
+      .filter((field) => field !== "description" && field !== "imageUrl")
 
     if (emptyFields.length > 0) {
       return response.status(400).json({
@@ -43,6 +44,7 @@ export class ForRegisterProductsApiAdapter {
       productFields.sku,
       productFields.initialStock,
       productFields.minStock,
+      productFields.imageUrl,
     )
 
     try {

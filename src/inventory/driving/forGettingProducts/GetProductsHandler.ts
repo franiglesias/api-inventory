@@ -27,6 +27,7 @@ export class GetProductsHandler {
           product.minStock,
           product.createdAt,
           product.updatedAt,
+          product.imageUrl,
         ),
     )
   }

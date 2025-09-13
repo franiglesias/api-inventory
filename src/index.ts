@@ -20,36 +20,12 @@ import { AddUnits } from "./inventory/driving/forUpdatingStock/AddUnits"
 import { AddUnitsHandler } from "./inventory/driving/forUpdatingStock/AddUnitsHandler"
 import { RemoveUnits } from "./inventory/driving/forUpdatingStock/RemoveUnits"
 import { RemoveUnitsHandler } from "./inventory/driving/forUpdatingStock/RemoveUnitsHandler"
+import { readProductsFromFile } from "./lib/read-products"
 
 dotenv.config()
 
-function productFixtures() {
-  return [
-    {
-      id: "c1a9b9d2-6f20-4e1a-9f8a-1234567890ab",
-      name: "USB-C Cable",
-      description: "1m braided cable",
-      sku: "USBC-1M-BRAIDED",
-      stock: 42,
-      minStock: 5,
-      createdAt: new Date("2019-08-24T14:15:22Z"),
-      updatedAt: new Date("2019-08-24T14:15:22Z"),
-    },
-    {
-      id: "f67e3fe2-72b7-4faa-be3f-e272b70faa56",
-      name: "Ethernet Cable",
-      description: "10m braided cable",
-      sku: "ETHC-10M-BRAIDED",
-      stock: 30,
-      minStock: 5,
-      createdAt: new Date("2025-08-24T14:15:22Z"),
-      updatedAt: new Date("2025-09-10T14:15:22Z"),
-    },
-  ]
-}
-
 function buildApplication(): MessageBusAdapter {
-  const forStoringProducts = new ForStoringProductsMemoryAdapter(productFixtures())
+  const forStoringProducts = new ForStoringProductsMemoryAdapter(readProductsFromFile())
 
   const messageBus = new MessageBus()
   messageBus.register(GetHealth, new GetHealthHandler())

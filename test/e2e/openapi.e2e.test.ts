@@ -52,6 +52,7 @@ describe("Inventory API E2E (OpenAPI scenarios)", () => {
       sku: fixtureSku,
       initialStock: 10,
       minStock: 1,
+      imageUrl: "https://example.com/images/e2e-fixture.jpg",
     })
   })
 

@@ -5,6 +5,7 @@ export class Product {
   private name: string
   private description: string
   private sku: string
+  private imageUrl?: string
   private stock: number
   private minStock: number
   private createdAt: Date
@@ -19,6 +20,7 @@ export class Product {
     minStock: number,
     createdAt: Date,
     updatedAt?: Date,
+    imageUrl?: string,
   ) {
     this.id = id
     this.name = name
@@ -28,6 +30,7 @@ export class Product {
     this.minStock = minStock
     this.createdAt = createdAt
     this.updatedAt = updatedAt
+    this.imageUrl = imageUrl
   }
 
   static register(
@@ -37,8 +40,19 @@ export class Product {
     sku: string,
     initialStock: number,
     minStock: number,
+    imageUrl?: string,
   ) {
-    return new Product(id, name, description, sku, initialStock, minStock, new Date(), undefined)
+    return new Product(
+      id,
+      name,
+      description,
+      sku,
+      initialStock,
+      minStock,
+      new Date(),
+      undefined,
+      imageUrl,
+    )
   }
 
   toStoredProduct(): StoredProduct {
@@ -47,6 +61,7 @@ export class Product {
       name: this.name,
       description: this.description,
       sku: this.sku,
+      imageUrl: this.imageUrl,
       stock: this.stock,
       minStock: this.minStock,
       createdAt: this.createdAt,

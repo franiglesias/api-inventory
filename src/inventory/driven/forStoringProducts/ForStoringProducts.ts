@@ -5,6 +5,7 @@ export class StoredProduct implements Message {
   public name!: string
   public description!: string
   public sku!: string
+  public imageUrl?: string
   public stock!: number
   public minStock!: number
   public createdAt!: Date

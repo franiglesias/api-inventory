@@ -29,6 +29,7 @@ export class RegisterProductHandler implements MessageHandler<RegisterProduct> {
       registerProduct.sku,
       registerProduct.initialStock,
       registerProduct.minStock,
+      registerProduct.imageUrl,
     )
 
     const productToStore: StoredProduct = product.toStoredProduct()

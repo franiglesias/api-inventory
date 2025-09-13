@@ -165,6 +165,10 @@ components:
           type: string
           description: Stock Keeping Unit (unique)
           example: USBC-1M-BRAIDED
+        imageUrl:
+          type: string
+          description: URL to the product image
+          example: https://example.com/images/usbc-1m.jpg
         stock:
           type: integer
           format: int64
@@ -191,6 +195,9 @@ components:
           type: string
         sku:
           type: string
+        imageUrl:
+          type: string
+          description: URL to the product image
         initialStock:
           type: integer
           format: int64

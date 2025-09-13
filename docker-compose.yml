@@ -10,9 +10,13 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+      - sqlite-data:/data
     environment:
       - NODE_ENV=development
       - PORT=3000
+      # Uncomment to test SQLite in dev:
+      # - STORAGE_ADAPTER=sqlite
+      # - SQLITE_DB_PATH=/data/inventory.db
     command: ['sh', '-c', 'npm ci && npm run dev']
     profiles:
       - dev
@@ -28,6 +32,10 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - STORAGE_ADAPTER=sqlite
+      - SQLITE_DB_PATH=/data/inventory.db
+    volumes:
+      - sqlite-data:/data
     profiles:
       - prod
 
@@ -42,6 +50,13 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - STORAGE_ADAPTER=sqlite
+      - SQLITE_DB_PATH=/data/inventory.db
+    volumes:
+      - sqlite-data:/data
     restart: unless-stopped
     profiles:
       - prod
+
+volumes:
+  sqlite-data:

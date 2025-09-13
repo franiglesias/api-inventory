@@ -5,6 +5,11 @@ export default defineConfig({
     // Test environment
     environment: 'node',
 
+    // Ensure NODE_ENV is 'test' so src/index.ts loads .env.test
+    env: {
+      NODE_ENV: 'test',
+    },
+
     // Coverage configuration
     coverage: {
       provider: 'v8',

@@ -27,6 +27,9 @@ WORKDIR /app
 # Ensure Node resolves extensionless ESM specifiers in dist
 ENV NODE_OPTIONS="--experimental-specifier-resolution=node"
 
+# System deps needed to build better-sqlite3
+RUN apk add --no-cache python3 make g++
+
 # Copy package files
 COPY package*.json ./
 
@@ -35,6 +38,10 @@ RUN npm ci --only=production && npm cache clean --force
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
+
+# Prepare data directory for SQLite
+RUN mkdir -p /data && chown -R node:node /data
+ENV SQLITE_DB_PATH=/data/inventory.db
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
@@ -59,6 +66,9 @@ FROM node:18-alpine AS development
 
 # Set working directory
 WORKDIR /app
+
+# System deps needed to build better-sqlite3 in dev
+RUN apk add --no-cache python3 make g++
 
 # Copy package files
 COPY package*.json ./

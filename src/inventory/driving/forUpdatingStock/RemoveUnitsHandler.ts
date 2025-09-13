@@ -1,16 +1,18 @@
 import { MessageHandler } from '../../driven/forDispatchingMessages/ForDispatchingMessages'
 import { RemoveUnits } from './RemoveUnits'
-import { ForStoringProductsMemoryAdapter } from '../../../driven/forStoringProducts/MemoryAdapter'
-import { StoredProduct } from '../../driven/forStoringProducts/ForStoringProducts'
+import {
+  ForStoringProducts,
+  StoredProduct,
+} from '../../driven/forStoringProducts/ForStoringProducts'
 import { SkuNotFound } from './SkuNotFound'
 import { Product } from '../../Product'
 import { ForGettingTime } from '../../driven/forGettingTime/ForGettingTime'
 
 export class RemoveUnitsHandler implements MessageHandler<RemoveUnits> {
-  private forStoringProducts: ForStoringProductsMemoryAdapter
+  private forStoringProducts: ForStoringProducts
   private readonly forGettingTime: ForGettingTime
 
-  constructor(forStoringProducts: ForStoringProductsMemoryAdapter, forGettingTime: ForGettingTime) {
+  constructor(forStoringProducts: ForStoringProducts, forGettingTime: ForGettingTime) {
     this.forStoringProducts = forStoringProducts
     this.forGettingTime = forGettingTime
   }

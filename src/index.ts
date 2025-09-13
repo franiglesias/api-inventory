@@ -12,6 +12,7 @@ import { ForGettingProductsApiAdapter } from './driving/forGettingProducts/ApiAd
 import { GetProducts } from './inventory/driving/forGettingProducts/GetProducts'
 import { GetProductsHandler } from './inventory/driving/forGettingProducts/GetProductsHandler'
 import { ForStoringProductsMemoryAdapter } from './driven/forStoringProducts/MemoryAdapter'
+import { ForStoringProductsSqliteAdapter } from './driven/forStoringProducts/SqliteAdapter'
 import { RegisterProduct } from './inventory/driving/forRegisteringProducts/RegisterProduct'
 import { RegisterProductHandler } from './inventory/driving/forRegisteringProducts/RegisterProductHandler'
 import { ForRegisterProductsApiAdapter } from './driving/forRegisterProducts/ApiAdapter'
@@ -23,12 +24,23 @@ import { RemoveUnitsHandler } from './inventory/driving/forUpdatingStock/RemoveU
 import { readProductsFromFile } from './lib/read-products'
 import { ForGettingTimeSystemAdapter } from './driven/forGettingTime/SystemAdapter'
 
-dotenv.config()
+// Load environment variables from the appropriate file.
+// Vitest sets NODE_ENV to 'test' by default; ensure we read .env.test in that case.
+const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
+dotenv.config({ path: envFile })
 
 const inventoryRouter = express.Router()
 
 function buildApplication(): MessageBusAdapter {
-  const forStoringProducts = new ForStoringProductsMemoryAdapter(readProductsFromFile())
+  const storageAdapter = (process.env.STORAGE_ADAPTER || 'memory').toLowerCase()
+  const initialProducts = readProductsFromFile()
+  const sqlitePath = process.env.SQLITE_DB_PATH || './data/inventory.db'
+
+  const forStoringProducts =
+    storageAdapter === 'sqlite' && process.env.NODE_ENV !== 'test'
+      ? new ForStoringProductsSqliteAdapter(sqlitePath, initialProducts)
+      : new ForStoringProductsMemoryAdapter(initialProducts)
+
   const forGettingTime = new ForGettingTimeSystemAdapter()
 
   const messageBus = new MessageBus()
@@ -58,7 +70,7 @@ inventoryRouter.get('/products', forGettingProducts.getProducts.bind(forGettingP
 const forCheckingHealth = new ForCheckingHealthApiAdapter(forDispatching)
 inventoryRouter.get('/health', forCheckingHealth.getHealth.bind(forCheckingHealth))
 
-inventoryRouter.get('/', (request, response) => response.status(200).send('Hello World'))
+inventoryRouter.get('/', (_request, response) => response.status(200).send('Hello World'))
 
 const app = express()
 // Parse JSON request bodies

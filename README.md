@@ -17,6 +17,9 @@ detailed reference that existed before is still available below under “Additio
 ## Environment variables
 
 - PORT: Port the server listens on (example: 3000). Docker images expose 3000.
+- STORAGE_ADAPTER: Storage backend. Options: "memory" (default) or "sqlite".
+- SQLITE_DB_PATH: When STORAGE_ADAPTER=sqlite, path to the SQLite database file. Defaults to
+  ./data/inventory.db locally, and /data/inventory.db in Docker.
 - INITIAL_DATA: Optional path (relative or absolute) to a JSON file used to seed initial products at
   startup. Defaults to data/products.json. The file should contain an array of objects with fields:
   name, description, sku, stock, minStock, createdAt, updatedAt (optional), imageUrl (optional).

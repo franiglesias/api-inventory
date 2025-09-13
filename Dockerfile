@@ -24,6 +24,9 @@ FROM node:18-alpine AS production
 # Set working directory
 WORKDIR /app
 
+# Ensure Node resolves extensionless ESM specifiers in dist
+ENV NODE_OPTIONS="--experimental-specifier-resolution=node"
+
 # Copy package files
 COPY package*.json ./
 
@@ -70,4 +73,4 @@ COPY . .
 EXPOSE 3000
 
 # Start development server with hot reload
-CMD ["npm", "run", "dev"]
+CMD ["sh", "-c", "npm ci && npm run dev"]

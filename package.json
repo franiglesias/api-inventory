@@ -4,12 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "LOG_LEVEL=trace DEBUG=* NODE_OPTIONS=--enable-source-maps tsx watch --clear-screen=false src/index.ts",
-    "dev:debug": "LOG_LEVEL=trace DEBUG=* NODE_OPTIONS=--enable-source-maps tsx watch --inspect=0.0.0.0:9229 --clear-screen=false src/index.ts",
+    "dev": "LOG_LEVEL=trace DEBUG=* NODE_OPTIONS=\"--enable-source-maps --experimental-specifier-resolution=node\" tsx watch --clear-screen=false src/index.ts",
+    "dev:debug": "LOG_LEVEL=trace DEBUG=* NODE_OPTIONS=\"--enable-source-maps --experimental-specifier-resolution=node\" tsx watch --inspect=0.0.0.0:9229 --clear-screen=false src/index.ts",
     "stop": "node -e \"const fs=require('fs');const f='.server.pid';if(!fs.existsSync(f)){console.error('No .server.pid found. Is the server running?');process.exit(1)}const pid=Number(fs.readFileSync(f,'utf8').trim());if(!pid){console.error('Invalid PID in .server.pid');process.exit(1)}try{process.kill(pid,'SIGTERM');console.log('Sent SIGTERM to PID',pid);}catch(e){console.error('Failed to signal process',e);process.exit(1)}\"",
     "clean": "node -e \"const fs=require('fs');if(fs.existsSync('dist'))fs.rmSync('dist',{recursive:true,force:true});\"",
     "build": "npm run clean && tsc",
-    "start": "node dist/index.js",
+    "start": "NODE_OPTIONS=\"--experimental-specifier-resolution=node\" node dist/index.js",
     "test": "vitest",
     "test:api": "vitest test/e2e",
     "test:run": "vitest run",
@@ -20,10 +20,10 @@
     "lint:format": "prettier --check .",
     "docker:build": "docker build -t api-inventory .",
     "docker:run": "docker run -p 3000:3000 api-inventory",
-    "compose:up": "docker-compose up",
-    "compose:up:dev": "docker-compose --profile dev up",
-    "compose:down": "docker-compose down",
-    "compose:build": "docker-compose build"
+    "compose:up": "docker compose up",
+    "compose:up:dev": "docker compose --profile dev up",
+    "compose:down": "docker compose down",
+    "compose:build": "docker compose build"
   },
   "keywords": [],
   "author": "",
@@ -33,11 +33,13 @@
     "node": ">=18"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "5.1.0",
     "uuid": "13.0.0"
   },
   "devDependencies": {
+    "@types/cors": "2.8.17",
     "@types/express": "5.0.3",
     "@types/node": "20.14.11",
     "@types/uuid": "10.0.0",

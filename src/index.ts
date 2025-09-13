@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 
 import dotenv from 'dotenv'
 
@@ -63,7 +64,13 @@ const app = express()
 // Parse JSON request bodies
 app.use(express.json())
 
-const PORT = process.env.PORT
+// Enable CORS for all routes (simple default for frontend development)
+app.use(cors())
+// Express 5 + path-to-regexp v6 no longer accepts '*' as a route path.
+// Use a catch-all pattern that matches any path for preflight requests.
+app.options(/.*/, cors())
+
+const PORT = process.env.PORT || '3000'
 
 app.use('/', inventoryRouter)
 

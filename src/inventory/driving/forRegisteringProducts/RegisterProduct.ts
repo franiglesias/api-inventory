@@ -1,12 +1,12 @@
 import { Message } from '../../driven/forDispatchingMessages/ForDispatchingMessages'
 
 export class RegisterProduct implements Message {
-  public name: string
-  public description: string
-  public sku: string
-  public initialStock: number
-  public minStock: number
-  public imageUrl?: string
+  public readonly name: string
+  public readonly description: string
+  public readonly sku: string
+  public readonly initialStock: number
+  public readonly minStock: number
+  public readonly imageUrl?: string | undefined
 
   constructor(
     name: string,

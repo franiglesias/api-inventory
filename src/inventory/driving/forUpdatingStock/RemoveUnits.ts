@@ -1,8 +1,8 @@
 import { Message } from '../../../lib/message'
 
 export class RemoveUnits implements Message {
-  public sku: string
-  public units: number
+  public readonly sku: string
+  public readonly units: number
 
   constructor(sku: string, units: number) {
     this.sku = sku

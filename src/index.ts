@@ -2,7 +2,6 @@ import express from 'express'
 
 import dotenv from 'dotenv'
 
-import inventoryRouter from './driving/router/router'
 import { MessageBus } from './lib/message-bus'
 import { GetHealth } from './inventory/driving/forCheckingHealth/GetHealth'
 import { GetHealthHandler } from './inventory/driving/forCheckingHealth/GetHealthHandler'
@@ -35,6 +34,8 @@ function buildApplication(): MessageBusAdapter {
   messageBus.register(RemoveUnits, new RemoveUnitsHandler(forStoringProducts))
   return new MessageBusAdapter(messageBus)
 }
+
+const inventoryRouter = express.Router()
 
 const forDispatching = buildApplication()
 

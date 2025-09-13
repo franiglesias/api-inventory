@@ -15,15 +15,20 @@ export class AddUnitsHandler implements MessageHandler<AddUnits> {
   }
 
   public handle(addUnits: AddUnits): StoredProduct {
-    const storedProduct = this.forStoringProducts.retrieveAll().find((product) => {
-      return product.sku.toLowerCase() === addUnits.sku.toLowerCase()
-    })
-
-    if (!storedProduct) throw new SkuNotFound(addUnits.sku)
+    const storedProduct = this.retrieveProductData(addUnits.sku)
 
     const updated = Product.fromStored(storedProduct).addStock(addUnits.units)
 
     this.forStoringProducts.store(updated.toStoredProduct())
     return updated.toStoredProduct()
+  }
+
+  private retrieveProductData(sku: string) {
+    const storedProduct = this.forStoringProducts.retrieveAll().find((product) => {
+      return product.sku.toLowerCase() === sku.toLowerCase()
+    })
+
+    if (!storedProduct) throw new SkuNotFound(sku)
+    return storedProduct
   }
 }

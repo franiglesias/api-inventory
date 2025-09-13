@@ -1,15 +1,16 @@
 import { StoredProduct } from './driven/forStoringProducts/ForStoringProducts'
+import { NegativeStock } from './driving/forUpdatingStock/NegativeStock'
 
 export class Product {
-  private id: string
-  private name: string
-  private description: string
-  private sku: string
-  private imageUrl?: string | undefined
-  private stock: number
-  private minStock: number
-  private createdAt: Date
-  private updatedAt: Date | undefined
+  private readonly id: string
+  private readonly name: string
+  private readonly description: string
+  private readonly sku: string
+  private readonly imageUrl?: string | undefined
+  private readonly stock: number
+  private readonly minStock: number
+  private readonly createdAt: Date
+  private readonly updatedAt: Date | undefined
 
   constructor(
     id: string,
@@ -90,6 +91,24 @@ export class Product {
       this.description,
       this.sku,
       this.stock + units,
+      this.minStock,
+      this.createdAt,
+      new Date(),
+      this.imageUrl,
+    )
+  }
+
+  removeStock(units: number) {
+    if (this.stock - units < 0) {
+      throw new NegativeStock(this.sku, this.stock)
+    }
+
+    return new Product(
+      this.id,
+      this.name,
+      this.description,
+      this.sku,
+      this.stock - units,
       this.minStock,
       this.createdAt,
       new Date(),

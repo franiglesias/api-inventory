@@ -1,10 +1,10 @@
-import { ForDispatchingMessages } from "../../inventory/driven/forDispatchingMessages/ForDispatchingMessages"
-import { Request, Response } from "express-serve-static-core"
-import { ParsedQs } from "qs"
-import { AddUnits } from "../../inventory/driving/forUpdatingStock/AddUnits"
-import { SkuNotFound } from "../../inventory/driving/forUpdatingStock/SkuNotFound"
-import { RemoveUnits } from "../../inventory/driving/forUpdatingStock/RemoveUnits"
-import { NegativeStock } from "../../inventory/driving/forUpdatingStock/NegativeStock"
+import { ForDispatchingMessages } from '../../inventory/driven/forDispatchingMessages/ForDispatchingMessages'
+import { Request, Response } from 'express-serve-static-core'
+import { ParsedQs } from 'qs'
+import { AddUnits } from '../../inventory/driving/forUpdatingStock/AddUnits'
+import { SkuNotFound } from '../../inventory/driving/forUpdatingStock/SkuNotFound'
+import { RemoveUnits } from '../../inventory/driving/forUpdatingStock/RemoveUnits'
+import { NegativeStock } from '../../inventory/driving/forUpdatingStock/NegativeStock'
 
 export class ForUpdatingStockApiAdapter {
   private forDispatching: ForDispatchingMessages
@@ -32,13 +32,13 @@ export class ForUpdatingStockApiAdapter {
     const units = body.units
 
     if (!sku.trim()) {
-      response.status(400).json({ error: "SKU no válido" })
+      response.status(400).json({ error: 'SKU no válido' })
       return
     }
     sku = sku.trim().toLowerCase()
 
-    if (typeof units !== "number" || units <= 0) {
-      response.status(400).json({ error: "Units no válido o menor igual a 0" })
+    if (typeof units !== 'number' || units <= 0) {
+      response.status(400).json({ error: 'Units no válido o menor igual a 0' })
       return
     }
 
@@ -52,7 +52,7 @@ export class ForUpdatingStockApiAdapter {
       }
       response
         .status(500)
-        .json({ error: "Error interno del servidor: " + (error as Error).message })
+        .json({ error: 'Error interno del servidor: ' + (error as Error).message })
     }
   }
 
@@ -75,13 +75,13 @@ export class ForUpdatingStockApiAdapter {
     const units = body.units
 
     if (!sku.trim()) {
-      response.status(400).json({ error: "SKU no válido" })
+      response.status(400).json({ error: 'SKU no válido' })
       return
     }
     sku = sku.trim().toLowerCase()
 
-    if (typeof units !== "number" || units <= 0) {
-      response.status(400).json({ error: "Units no válido o menor igual a 0" })
+    if (typeof units !== 'number' || units <= 0) {
+      response.status(400).json({ error: 'Units no válido o menor igual a 0' })
       return
     }
 
@@ -98,7 +98,7 @@ export class ForUpdatingStockApiAdapter {
       }
       response
         .status(500)
-        .json({ error: "Error interno del servidor: " + (error as Error).message })
+        .json({ error: 'Error interno del servidor: ' + (error as Error).message })
     }
   }
 }

@@ -1,11 +1,11 @@
-import { StoredProduct } from "./driven/forStoringProducts/ForStoringProducts"
+import { StoredProduct } from './driven/forStoringProducts/ForStoringProducts'
 
 export class Product {
   private id: string
   private name: string
   private description: string
   private sku: string
-  private imageUrl?: string
+  private imageUrl?: string | undefined
   private stock: number
   private minStock: number
   private createdAt: Date
@@ -20,7 +20,7 @@ export class Product {
     minStock: number,
     createdAt: Date,
     updatedAt?: Date,
-    imageUrl?: string,
+    imageUrl?: string | undefined,
   ) {
     this.id = id
     this.name = name
@@ -67,5 +67,33 @@ export class Product {
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     } as StoredProduct
+  }
+
+  static fromStored(storedProduct: StoredProduct): Product {
+    return new Product(
+      storedProduct.id,
+      storedProduct.name,
+      storedProduct.description,
+      storedProduct.sku,
+      storedProduct.stock,
+      storedProduct.minStock,
+      storedProduct.createdAt,
+      storedProduct.updatedAt,
+      storedProduct.imageUrl,
+    )
+  }
+
+  addStock(units: number): Product {
+    return new Product(
+      this.id,
+      this.name,
+      this.description,
+      this.sku,
+      this.stock + units,
+      this.minStock,
+      this.createdAt,
+      new Date(),
+      this.imageUrl,
+    )
   }
 }

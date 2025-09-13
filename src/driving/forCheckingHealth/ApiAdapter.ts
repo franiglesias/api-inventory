@@ -1,7 +1,7 @@
-import { Request, Response } from "express-serve-static-core"
-import { ParsedQs } from "qs"
-import { GetHealth } from "../../inventory/driving/forCheckingHealth/GetHealth"
-import { ForDispatchingMessages } from "../../inventory/driven/forDispatchingMessages/ForDispatchingMessages"
+import { Request, Response } from 'express-serve-static-core'
+import { ParsedQs } from 'qs'
+import { GetHealth } from '../../inventory/driving/forCheckingHealth/GetHealth'
+import { ForDispatchingMessages } from '../../inventory/driven/forDispatchingMessages/ForDispatchingMessages'
 
 export class ForCheckingHealthApiAdapter {
   private forDispatching: ForDispatchingMessages
@@ -17,13 +17,13 @@ export class ForCheckingHealthApiAdapter {
     const getHealth = new GetHealth()
     if (this.forDispatching.dispatch(getHealth)) {
       response.status(200).json({
-        status: "ok",
+        status: 'ok',
       })
       return
     }
     response.status(500).json({
-      error: "Internal Server Error. App is not working.",
-      code: "500",
+      error: 'Internal Server Error. App is not working.',
+      code: '500',
     })
   }
 }

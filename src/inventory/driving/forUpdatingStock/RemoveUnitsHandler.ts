@@ -1,9 +1,9 @@
-import { MessageHandler } from "../../driven/forDispatchingMessages/ForDispatchingMessages"
-import { RemoveUnits } from "./RemoveUnits"
-import { ForStoringProductsMemoryAdapter } from "../../../driven/forStoringProducts/MemoryAdapter"
-import { StoredProduct } from "../../driven/forStoringProducts/ForStoringProducts"
-import { SkuNotFound } from "./SkuNotFound"
-import { NegativeStock } from "./NegativeStock"
+import { MessageHandler } from '../../driven/forDispatchingMessages/ForDispatchingMessages'
+import { RemoveUnits } from './RemoveUnits'
+import { ForStoringProductsMemoryAdapter } from '../../../driven/forStoringProducts/MemoryAdapter'
+import { StoredProduct } from '../../driven/forStoringProducts/ForStoringProducts'
+import { SkuNotFound } from './SkuNotFound'
+import { NegativeStock } from './NegativeStock'
 
 export class RemoveUnitsHandler implements MessageHandler<RemoveUnits> {
   private forStoringProducts: ForStoringProductsMemoryAdapter

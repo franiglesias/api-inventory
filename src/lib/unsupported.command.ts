@@ -5,7 +5,7 @@ export class UnsupportedCommand implements Error {
   cause?: unknown
 
   constructor() {
-    this.name = "UnsupportedCommand"
-    this.message = "Unsupported command"
+    this.name = 'UnsupportedCommand'
+    this.message = 'Unsupported command'
   }
 }

@@ -1,26 +1,26 @@
-import { defineConfig } from "vitest/config"
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
     // Test environment
-    environment: "node",
+    environment: 'node',
 
     // Coverage configuration
     coverage: {
-      provider: "v8",
-      reporter: ["text", "json", "html"],
-      exclude: ["node_modules/", "dist/", "**/*.d.ts", "**/*.config.*", "**/coverage/**"],
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: ['node_modules/', 'dist/', '**/*.d.ts', '**/*.config.*', '**/coverage/**'],
     },
 
     // Test file patterns
     include: [
-      "src/**/*.{test,spec}.{js,ts}",
-      "test/**/*.{test,spec}.{js,ts}",
-      "**/__tests__/**/*.{js,ts}",
+      'src/**/*.{test,spec}.{js,ts}',
+      'test/**/*.{test,spec}.{js,ts}',
+      '**/__tests__/**/*.{js,ts}',
     ],
 
     // Exclude patterns
-    exclude: ["node_modules/", "dist/", ".idea/", ".git/", ".cache/"],
+    exclude: ['node_modules/', 'dist/', '.idea/', '.git/', '.cache/'],
 
     // Global test setup
     globals: true,
@@ -33,11 +33,11 @@ export default defineConfig({
 
     // Reporter configuration
     // Use supported reporters in Vitest v3: 'default' and 'junit' (optional) or 'json'. 'html' is not a valid test reporter; it's for coverage only.
-    reporters: ["default", "json"],
+    reporters: ['default', 'json'],
 
     // Output files for reporters. Keys must match reporter names.
     outputFile: {
-      json: "./coverage/test-results.json",
+      json: './coverage/test-results.json',
     },
   },
 })

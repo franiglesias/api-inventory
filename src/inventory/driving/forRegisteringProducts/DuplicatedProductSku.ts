@@ -4,6 +4,6 @@ export class DuplicatedProductSku implements Error {
 
   constructor(sku: string) {
     this.message = `SKU \'${sku}\' already exists`
-    this.name = "DuplicatedProductSKu"
+    this.name = 'DuplicatedProductSKu'
   }
 }

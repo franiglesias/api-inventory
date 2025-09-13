@@ -1,17 +1,17 @@
-import fs from "fs"
-import path from "path"
-import { StoredProduct } from "../inventory/driven/forStoringProducts/ForStoringProducts"
-import { v4 } from "uuid"
+import fs from 'fs'
+import path from 'path'
+import { StoredProduct } from '../inventory/driven/forStoringProducts/ForStoringProducts'
+import { v4 } from 'uuid'
 
 export function readProductsFromFile(
-  filePathRelative = process.env.INITIAL_DATA ?? "data/products.json",
+  filePathRelative = process.env.INITIAL_DATA ?? 'data/products.json',
 ): StoredProduct[] {
   const absolutePath = path.isAbsolute(filePathRelative)
     ? filePathRelative
     : path.join(process.cwd(), filePathRelative)
   try {
-    console.log("[INIT] Reading products from file:", absolutePath)
-    const raw = fs.readFileSync(absolutePath, { encoding: "utf-8" })
+    console.log('[INIT] Reading products from file:', absolutePath)
+    const raw = fs.readFileSync(absolutePath, { encoding: 'utf-8' })
     const parsed = JSON.parse(raw) as any[]
     console.log(`[INIT] Found ${parsed.length} products to import.`)
     if (!Array.isArray(parsed)) return []

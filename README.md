@@ -259,11 +259,11 @@ Create test files alongside your source code or in the `test/` directory:
 
 ```typescript
 // Example: src/inventory.test.ts
-import { describe, it, expect } from "vitest"
-import { Inventory } from "./inventory"
+import { describe, it, expect } from 'vitest'
+import { Inventory } from './inventory'
 
-describe("Inventory", () => {
-  it("should create an empty inventory", () => {
+describe('Inventory', () => {
+  it('should create an empty inventory', () => {
     const inventory = new Inventory()
     expect(inventory.getProducts()).toHaveLength(0)
   })
@@ -457,11 +457,11 @@ Create test files alongside your source code or in the `test/` directory:
 
 ```typescript
 // Example: src/inventory.test.ts
-import { describe, it, expect } from "vitest"
-import { Inventory } from "./inventory"
+import { describe, it, expect } from 'vitest'
+import { Inventory } from './inventory'
 
-describe("Inventory", () => {
-  it("should create an empty inventory", () => {
+describe('Inventory', () => {
+  it('should create an empty inventory', () => {
     const inventory = new Inventory()
     expect(inventory.getProducts()).toHaveLength(0)
   })

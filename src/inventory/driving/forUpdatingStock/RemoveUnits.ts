@@ -1,4 +1,4 @@
-import { Message } from "../../../lib/message"
+import { Message } from '../../../lib/message'
 
 export class RemoveUnits implements Message {
   public sku: string

@@ -1,8 +1,8 @@
-import { ForDispatchingMessages } from "../../inventory/driven/forDispatchingMessages/ForDispatchingMessages"
-import { Request, Response } from "express-serve-static-core"
-import { ParsedQs } from "qs"
-import { RegisterProduct } from "../../inventory/driving/forRegisteringProducts/RegisterProduct"
-import { DuplicatedProductSku } from "../../inventory/driving/forRegisteringProducts/DuplicatedProductSku"
+import { ForDispatchingMessages } from '../../inventory/driven/forDispatchingMessages/ForDispatchingMessages'
+import { Request, Response } from 'express-serve-static-core'
+import { ParsedQs } from 'qs'
+import { RegisterProduct } from '../../inventory/driving/forRegisteringProducts/RegisterProduct'
+import { DuplicatedProductSku } from '../../inventory/driving/forRegisteringProducts/DuplicatedProductSku'
 
 export class ForRegisterProductsApiAdapter {
   private forDispatching: ForDispatchingMessages
@@ -29,11 +29,11 @@ export class ForRegisterProductsApiAdapter {
     const emptyFields = Object.entries(productFields)
       .filter(([_, value]) => !value)
       .map(([key]) => key)
-      .filter((field) => field !== "description" && field !== "imageUrl")
+      .filter((field) => field !== 'description' && field !== 'imageUrl')
 
     if (emptyFields.length > 0) {
       return response.status(400).json({
-        error: `Missing required fields: ${emptyFields.join(", ")}`,
+        error: `Missing required fields: ${emptyFields.join(', ')}`,
         code: 400,
       })
     }

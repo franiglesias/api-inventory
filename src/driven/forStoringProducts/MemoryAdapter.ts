@@ -1,7 +1,7 @@
 import {
   ForStoringProducts,
   StoredProduct,
-} from "../../inventory/driven/forStoringProducts/ForStoringProducts"
+} from '../../inventory/driven/forStoringProducts/ForStoringProducts'
 
 export class ForStoringProductsMemoryAdapter implements ForStoringProducts {
   private readonly products: StoredProduct[] = []

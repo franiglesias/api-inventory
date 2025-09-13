@@ -1,12 +1,12 @@
 import {
   ForStoringProducts,
   StoredProduct,
-} from "../../driven/forStoringProducts/ForStoringProducts"
-import { RegisterProduct } from "./RegisterProduct"
-import { MessageHandler } from "../../driven/forDispatchingMessages/ForDispatchingMessages"
-import { Product } from "../../Product"
-import { v4 } from "uuid"
-import { DuplicatedProductSku } from "./DuplicatedProductSku"
+} from '../../driven/forStoringProducts/ForStoringProducts'
+import { RegisterProduct } from './RegisterProduct'
+import { MessageHandler } from '../../driven/forDispatchingMessages/ForDispatchingMessages'
+import { Product } from '../../Product'
+import { v4 } from 'uuid'
+import { DuplicatedProductSku } from './DuplicatedProductSku'
 
 export class RegisterProductHandler implements MessageHandler<RegisterProduct> {
   private forStoringProducts: ForStoringProducts

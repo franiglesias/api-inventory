@@ -1,9 +1,9 @@
-import { GetProducts } from "./GetProducts"
+import { GetProducts } from './GetProducts'
 import {
   ForStoringProducts,
   StoredProduct,
-} from "../../driven/forStoringProducts/ForStoringProducts"
-import { Product } from "../../Product"
+} from '../../driven/forStoringProducts/ForStoringProducts'
+import { Product } from '../../Product'
 
 export class GetProductsHandler {
   private forStoringProducts: ForStoringProducts
@@ -13,7 +13,7 @@ export class GetProductsHandler {
   }
 
   public handle(_getProducts: GetProducts): Product[] {
-    console.log("GetProductsHandler.handle()")
+    console.log('GetProductsHandler.handle()')
     let storedProducts: StoredProduct[] = this.forStoringProducts.retrieveAll()
 
     return storedProducts.map(

@@ -1,4 +1,4 @@
-import { Message } from "../../driven/forDispatchingMessages/ForDispatchingMessages"
+import { Message } from '../../driven/forDispatchingMessages/ForDispatchingMessages'
 
 export class AddUnits implements Message {
   public sku: string

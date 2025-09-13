@@ -1,10 +1,11 @@
-import { MessageHandler } from "../../driven/forDispatchingMessages/ForDispatchingMessages"
+import { MessageHandler } from '../../driven/forDispatchingMessages/ForDispatchingMessages'
 import {
   ForStoringProducts,
   StoredProduct,
-} from "../../driven/forStoringProducts/ForStoringProducts"
-import { AddUnits } from "./AddUnits"
-import { SkuNotFound } from "./SkuNotFound"
+} from '../../driven/forStoringProducts/ForStoringProducts'
+import { AddUnits } from './AddUnits'
+import { SkuNotFound } from './SkuNotFound'
+import { Product } from '../../Product'
 
 export class AddUnitsHandler implements MessageHandler<AddUnits> {
   private forStoringProducts: ForStoringProducts
@@ -14,14 +15,15 @@ export class AddUnitsHandler implements MessageHandler<AddUnits> {
   }
 
   public handle(addUnits: AddUnits): StoredProduct {
-    const product = this.forStoringProducts.retrieveAll().find((product) => {
+    const storedProduct = this.forStoringProducts.retrieveAll().find((product) => {
       return product.sku.toLowerCase() === addUnits.sku.toLowerCase()
     })
 
-    if (!product) throw new SkuNotFound(addUnits.sku)
+    if (!storedProduct) throw new SkuNotFound(addUnits.sku)
 
-    product.stock += addUnits.units
-    this.forStoringProducts.store(product)
-    return product
+    const updated = Product.fromStored(storedProduct).addStock(addUnits.units)
+
+    this.forStoringProducts.store(updated.toStoredProduct())
+    return updated.toStoredProduct()
   }
 }

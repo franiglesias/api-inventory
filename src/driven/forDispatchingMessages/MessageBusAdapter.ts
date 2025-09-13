@@ -1,9 +1,9 @@
 import {
   ForDispatchingMessages,
   Message,
-} from "../../inventory/driven/forDispatchingMessages/ForDispatchingMessages"
-import { MessageBus } from "../../lib/message-bus"
-import { Message as LibMessage } from "../../lib/message"
+} from '../../inventory/driven/forDispatchingMessages/ForDispatchingMessages'
+import { MessageBus } from '../../lib/message-bus'
+import { Message as LibMessage } from '../../lib/message'
 
 export class MessageBusAdapter implements ForDispatchingMessages {
   private messageBus: MessageBus

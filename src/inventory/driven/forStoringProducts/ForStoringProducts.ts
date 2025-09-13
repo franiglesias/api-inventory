@@ -1,4 +1,4 @@
-import { Message } from "../forDispatchingMessages/ForDispatchingMessages"
+import { Message } from '../forDispatchingMessages/ForDispatchingMessages'
 
 export class StoredProduct implements Message {
   public id!: string

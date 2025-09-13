@@ -1,7 +1,7 @@
-import { ForDispatchingMessages } from "../../inventory/driven/forDispatchingMessages/ForDispatchingMessages"
-import { Request, Response } from "express-serve-static-core"
-import { ParsedQs } from "qs"
-import { GetProducts } from "../../inventory/driving/forGettingProducts/GetProducts"
+import { ForDispatchingMessages } from '../../inventory/driven/forDispatchingMessages/ForDispatchingMessages'
+import { Request, Response } from 'express-serve-static-core'
+import { ParsedQs } from 'qs'
+import { GetProducts } from '../../inventory/driving/forGettingProducts/GetProducts'
 
 export class ForGettingProductsApiAdapter {
   private forDispatching: ForDispatchingMessages

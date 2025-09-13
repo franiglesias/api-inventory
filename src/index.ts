@@ -20,22 +20,24 @@ import { AddUnitsHandler } from './inventory/driving/forUpdatingStock/AddUnitsHa
 import { RemoveUnits } from './inventory/driving/forUpdatingStock/RemoveUnits'
 import { RemoveUnitsHandler } from './inventory/driving/forUpdatingStock/RemoveUnitsHandler'
 import { readProductsFromFile } from './lib/read-products'
+import { ForGettingTimeSystemAdapter } from './driven/forGettingTime/SystemAdapter'
 
 dotenv.config()
 
+const inventoryRouter = express.Router()
+
 function buildApplication(): MessageBusAdapter {
   const forStoringProducts = new ForStoringProductsMemoryAdapter(readProductsFromFile())
+  const forGettingTime = new ForGettingTimeSystemAdapter()
 
   const messageBus = new MessageBus()
   messageBus.register(GetHealth, new GetHealthHandler())
   messageBus.register(GetProducts, new GetProductsHandler(forStoringProducts))
   messageBus.register(RegisterProduct, new RegisterProductHandler(forStoringProducts))
-  messageBus.register(AddUnits, new AddUnitsHandler(forStoringProducts))
-  messageBus.register(RemoveUnits, new RemoveUnitsHandler(forStoringProducts))
+  messageBus.register(AddUnits, new AddUnitsHandler(forStoringProducts, forGettingTime))
+  messageBus.register(RemoveUnits, new RemoveUnitsHandler(forStoringProducts, forGettingTime))
   return new MessageBusAdapter(messageBus)
 }
-
-const inventoryRouter = express.Router()
 
 const forDispatching = buildApplication()
 
@@ -58,7 +60,6 @@ inventoryRouter.get('/health', forCheckingHealth.getHealth.bind(forCheckingHealt
 inventoryRouter.get('/', (request, response) => response.status(200).send('Hello World'))
 
 const app = express()
-
 // Parse JSON request bodies
 app.use(express.json())
 

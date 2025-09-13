@@ -4,18 +4,21 @@ import { ForStoringProductsMemoryAdapter } from '../../../driven/forStoringProdu
 import { StoredProduct } from '../../driven/forStoringProducts/ForStoringProducts'
 import { SkuNotFound } from './SkuNotFound'
 import { Product } from '../../Product'
+import { ForGettingTime } from '../../driven/forGettingTime/ForGettingTime'
 
 export class RemoveUnitsHandler implements MessageHandler<RemoveUnits> {
   private forStoringProducts: ForStoringProductsMemoryAdapter
+  private readonly forGettingTime: ForGettingTime
 
-  constructor(forStoringProducts: ForStoringProductsMemoryAdapter) {
+  constructor(forStoringProducts: ForStoringProductsMemoryAdapter, forGettingTime: ForGettingTime) {
     this.forStoringProducts = forStoringProducts
+    this.forGettingTime = forGettingTime
   }
 
   handle(removeUnits: RemoveUnits): StoredProduct {
     const product = this.retrieveProductData(removeUnits.sku)
 
-    const updated = Product.fromStored(product).removeStock(removeUnits.units)
+    const updated = Product.fromStored(product).removeStock(removeUnits.units, this.forGettingTime)
 
     this.forStoringProducts.store(updated.toStoredProduct())
     return updated.toStoredProduct()

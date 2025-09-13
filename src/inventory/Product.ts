@@ -1,3 +1,4 @@
+import { ForGettingTime } from './driven/forGettingTime/ForGettingTime'
 import { StoredProduct } from './driven/forStoringProducts/ForStoringProducts'
 import { NegativeStock } from './driving/forUpdatingStock/NegativeStock'
 
@@ -84,7 +85,7 @@ export class Product {
     )
   }
 
-  addStock(units: number): Product {
+  addStock(units: number, forGettingTime: ForGettingTime): Product {
     return new Product(
       this.id,
       this.name,
@@ -93,12 +94,12 @@ export class Product {
       this.stock + units,
       this.minStock,
       this.createdAt,
-      new Date(),
+      forGettingTime.now(),
       this.imageUrl,
     )
   }
 
-  removeStock(units: number) {
+  removeStock(units: number, forGettingTime: ForGettingTime): Product {
     if (this.stock - units < 0) {
       throw new NegativeStock(this.sku, this.stock)
     }
@@ -111,7 +112,7 @@ export class Product {
       this.stock - units,
       this.minStock,
       this.createdAt,
-      new Date(),
+      forGettingTime.now(),
       this.imageUrl,
     )
   }

@@ -17,6 +17,8 @@ export class InventoryDatabase {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
 
     const db = new Database(absPath)
+
+    // Create schema if needed
     db.exec(`
       CREATE TABLE IF NOT EXISTS products
       (
@@ -32,15 +34,43 @@ export class InventoryDatabase {
       );
     `)
 
+    // When running tests with sqlite, keep all changes inside a single transaction
+    // so the database stays clean after the test process exits.
+    if (process.env.NODE_ENV === 'test') {
+      try {
+        // Start a long-lived transaction. Any nested transactions will use SAVEPOINTs.
+        db.exec('BEGIN IMMEDIATE')
+        // Roll back all changes when the process exits.
+        process.once('exit', () => {
+          try {
+            db.exec('ROLLBACK')
+          } catch (_) {
+            // ignore if already closed or rolled back
+          }
+        })
+        // Also handle common termination signals during local runs
+        for (const sig of ['SIGINT', 'SIGTERM']) {
+          process.once(sig as NodeJS.Signals, () => {
+            try {
+              db.exec('ROLLBACK')
+            } catch (_) {}
+            process.exit(0)
+          })
+        }
+      } catch (e) {
+        // If BEGIN fails, continue without the global test transaction
+      }
+    }
+
     const inventory = new InventoryDatabase(db)
     if (seed && seed.length > 0) {
-      inventory.seedIfEmpty(seed)
+      inventory.seed(seed)
     }
 
     return inventory
   }
 
-  private seedIfEmpty(seed: StoredProduct[]) {
+  private seed(seed: StoredProduct[]) {
     const count = this.db.prepare('SELECT COUNT(1) as c FROM products').get() as any
     if ((count?.c ?? 0) > 0) return
     if (!seed || seed.length === 0) return

@@ -84,6 +84,21 @@ Tip: The full OpenAPI spec is in openapi/openapi.yaml and is covered by tests in
 - Optional: Use your dev server proxy for same-origin paths like `/api` (see detailed examples in
   README-ARCHIVE.md for Vite, Next.js, CRA).
 
+## Testing
+
+- Test runner: Vitest (see vitest.config.ts). Common commands:
+  - npm test — watch mode
+  - npm run test:run — run once
+  - npm run test:coverage — with coverage
+  - npm run test:api — OpenAPI E2E tests
+- Locations: test/ contains E2E and unit tests. Some unit tests may also live next to source files.
+- OpenAPI E2E tests: see test/e2e/\*. They hit the running app in-memory.
+- Database note: When STORAGE_ADAPTER=sqlite, database-related tests are executed inside a single
+  long‑lived transaction. This keeps test data isolated and automatically rolled back at the end of
+  the run, while allowing nested operations to use SAVEPOINTs.
+
+For more details, including additional test commands and tips, see README-ARCHIVE.md.
+
 ## Additional details (archived)
 
 To keep this README concise, the previous long-form reference has been moved to:

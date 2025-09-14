@@ -11,8 +11,6 @@ import { ForCheckingHealthApiAdapter } from './driving/forCheckingHealth/ApiAdap
 import { ForGettingProductsApiAdapter } from './driving/forGettingProducts/ApiAdapter'
 import { GetProducts } from './inventory/driving/forGettingProducts/GetProducts'
 import { GetProductsHandler } from './inventory/driving/forGettingProducts/GetProductsHandler'
-import { ForStoringProductsMemoryAdapter } from './driven/forStoringProducts/MemoryAdapter'
-import { ForStoringProductsSqliteAdapter } from './driven/forStoringProducts/SqliteAdapter'
 import { RegisterProduct } from './inventory/driving/forRegisteringProducts/RegisterProduct'
 import { RegisterProductHandler } from './inventory/driving/forRegisteringProducts/RegisterProductHandler'
 import { ForRegisterProductsApiAdapter } from './driving/forRegisterProducts/ApiAdapter'
@@ -21,42 +19,18 @@ import { AddUnits } from './inventory/driving/forUpdatingStock/AddUnits'
 import { AddUnitsHandler } from './inventory/driving/forUpdatingStock/AddUnitsHandler'
 import { RemoveUnits } from './inventory/driving/forUpdatingStock/RemoveUnits'
 import { RemoveUnitsHandler } from './inventory/driving/forUpdatingStock/RemoveUnitsHandler'
-import { readProductsFromFile } from './lib/read-products'
 import { ForGettingTimeSystemAdapter } from './driven/forGettingTime/SystemAdapter'
-import { InventoryDatabase } from './driven/forStoringProducts/InventoryDatabase'
-
-// Load environment variables from the appropriate file.
-// Vitest sets NODE_ENV to 'test' by default; ensure we read .env.test in that case.
+import { ForStoringProductsFactory } from './driven/forStoringProducts/ForStoringProductsFactory'
 
 const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
 
-console.log('Loading environment variables from', envFile)
 dotenv.config({ path: envFile })
 
 const inventoryRouter = express.Router()
 
 function buildApplication(): MessageBusAdapter {
   const storageAdapter = (process.env.STORAGE_ADAPTER || 'memory').toLowerCase()
-  let initialProducts = readProductsFromFile()
-  let sqlitePath = process.env.SQLITE_DB_PATH || './data/inventory.db'
-
-  let forStoringProducts: ForStoringProductsSqliteAdapter | ForStoringProductsMemoryAdapter
-
-  if (process.env.NODE_ENV === 'test') {
-    console.log('Running tests')
-    initialProducts = []
-    if (storageAdapter === 'sqlite') {
-      sqlitePath = './data/inventory.test.db'
-    }
-  }
-
-  if (storageAdapter === 'sqlite') {
-    const database = InventoryDatabase.init(sqlitePath, initialProducts)
-    forStoringProducts = new ForStoringProductsSqliteAdapter(database)
-  } else {
-    forStoringProducts = new ForStoringProductsMemoryAdapter(initialProducts)
-  }
-
+  const forStoringProducts = new ForStoringProductsFactory().create(storageAdapter)
   const forGettingTime = new ForGettingTimeSystemAdapter()
 
   const messageBus = new MessageBus()

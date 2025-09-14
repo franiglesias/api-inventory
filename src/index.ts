@@ -85,14 +85,16 @@ declare global {
 function startServer() {
   if (globalThis.__inventoryServer) return globalThis.__inventoryServer
   const server = app.listen(PORT, () => {
-    console.log('[SERVER] Server running at PORT: ', PORT)
-    console.log('[SERVER] Environment: ', process.env.NODE_ENV)
+    console.log('[SERVER] Environment ............:', process.env.NODE_ENV)
+    console.log('[SERVER] Server running at PORT .:', PORT)
+    console.log('[SERVER] Storage engine .........:', process.env.STORAGE_ADAPTER)
   })
   server.on('error', (error: any) => {
     if ((error as any)?.code === 'EADDRINUSE') {
-      console.warn(`Port ${PORT} in use, assuming server is already running.`)
+      console.warn(`[SERVER] Port ${PORT} in use, assuming server is already running.`)
       // do not throw here to avoid unhandled errors in tests
     } else {
+      console.warn(`[SERVER] An error occurred while starting the server: ${error.message}`)
       throw error
     }
   })

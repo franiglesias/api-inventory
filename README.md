@@ -85,6 +85,51 @@ This project is organized as a monorepo following Hexagonal Architecture princip
 
 ## Docker usage
 
+### Force Docker to rebuild (images, containers, volumes)
+
+Common scenarios and one-liners when Docker won’t pick up your changes or you need a clean slate.
+
+- Rebuild image without using cache (single Dockerfile build):
+
+  - `docker build --no-cache -t api-inventory .`
+
+- Rebuild and recreate with Docker Compose (build fresh image and force new containers):
+
+  - `docker compose up --build --force-recreate`
+  - Tip: add --no-deps to recreate only the listed services.
+
+- Rebuild compose images without cache first, then start:
+
+  - `docker compose build --no-cache`
+  - `docker compose up --force-recreate`
+
+- Nuke containers, networks, and volumes created by compose (careful: deletes data volumes):
+
+  - `docker compose down -v --remove-orphans`
+
+- Remove images built by the compose project (to force a full re-pull/rebuild next time):
+
+  - `docker compose down --rmi local`
+
+- Aggressive prune (all dangling/unused images, containers, networks, caches, and volumes):
+
+  - `docker system prune -af --volumes`
+
+- Cache-busting trick in Dockerfile (optional):
+
+  - Add an ARG and change it to invalidate cache across layers
+  - Example lines you can add near the top of your Dockerfile build stage: ARG CACHE_BUST=0
+    # bump the value: --build-arg CACHE_BUST=$(date +%s)
+
+- Recreate only containers (without rebuilding images):
+
+  - `docker compose up --force-recreate --no-build`
+
+- Verify what will be used (images and configs):
+  - `docker compose config`
+
+If you prefer npm scripts, see package.json entries added below.
+
 - Development (Compose dev profile): `npm run compose:up:dev`
 - Production (Compose prod profile): `docker compose --profile prod up`
 - Change host port only (container still listens on 3000 by default):

@@ -23,11 +23,14 @@ import { RemoveUnits } from './inventory/driving/forUpdatingStock/RemoveUnits'
 import { RemoveUnitsHandler } from './inventory/driving/forUpdatingStock/RemoveUnitsHandler'
 import { readProductsFromFile } from './lib/read-products'
 import { ForGettingTimeSystemAdapter } from './driven/forGettingTime/SystemAdapter'
-import Database from 'better-sqlite3'
+import { InventoryDatabase } from './driven/forStoringProducts/InventoryDatabase'
 
 // Load environment variables from the appropriate file.
 // Vitest sets NODE_ENV to 'test' by default; ensure we read .env.test in that case.
+
 const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
+
+console.log('Loading environment variables from', envFile)
 dotenv.config({ path: envFile })
 
 const inventoryRouter = express.Router()
@@ -43,55 +46,14 @@ function buildApplication(): MessageBusAdapter {
     console.log('Running tests')
     initialProducts = []
     if (storageAdapter === 'sqlite') {
-      console.log('Using SQLite adapter for test')
-      const sqlitePath = './data/inventory.test.db'
-      const db = new Database(sqlitePath)
-      db.exec(`
-        CREATE TABLE IF NOT EXISTS products
-        (
-          id
-            TEXT
-            PRIMARY
-              KEY,
-          name
-            TEXT
-            NOT
-              NULL,
-          description
-            TEXT
-            NOT
-              NULL,
-          sku
-            TEXT
-            NOT
-              NULL
-            UNIQUE,
-          imageUrl
-            TEXT,
-          stock
-            INTEGER
-            NOT
-              NULL,
-          minStock
-            INTEGER
-            NOT
-              NULL,
-          createdAt
-            TEXT
-            NOT
-              NULL,
-          updatedAt
-            TEXT
-        );`)
+      sqlitePath = './data/inventory.test.db'
     }
-  } else {
-    console.log('Running development')
   }
+
   if (storageAdapter === 'sqlite') {
-    console.log('Using SQLite adapter')
-    forStoringProducts = new ForStoringProductsSqliteAdapter(sqlitePath, initialProducts)
+    const database = InventoryDatabase.init(sqlitePath, initialProducts)
+    forStoringProducts = new ForStoringProductsSqliteAdapter(database)
   } else {
-    console.log('Using Memory adapter')
     forStoringProducts = new ForStoringProductsMemoryAdapter(initialProducts)
   }
 

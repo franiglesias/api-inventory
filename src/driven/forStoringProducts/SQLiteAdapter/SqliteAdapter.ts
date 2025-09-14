@@ -1,7 +1,7 @@
 import {
   ForStoringProducts,
   StoredProduct,
-} from '../../inventory/driven/forStoringProducts/ForStoringProducts'
+} from '../../../inventory/driven/forStoringProducts/ForStoringProducts'
 import { InventoryDatabase } from './InventoryDatabase'
 
 export class ForStoringProductsSqliteAdapter implements ForStoringProducts {

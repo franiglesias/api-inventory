@@ -3,9 +3,7 @@ import path from 'path'
 import { StoredProduct } from '../inventory/driven/forStoringProducts/ForStoringProducts'
 import { v4 } from 'uuid'
 
-export function readProductsFromFile(
-  filePathRelative = process.env.INITIAL_DATA ?? 'data/products.json',
-): StoredProduct[] {
+export function readProductsFromFile(filePathRelative: string): StoredProduct[] {
   const absolutePath = path.isAbsolute(filePathRelative)
     ? filePathRelative
     : path.join(process.cwd(), filePathRelative)

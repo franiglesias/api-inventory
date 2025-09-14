@@ -30,7 +30,10 @@ const inventoryRouter = express.Router()
 
 function buildApplication(): MessageBusAdapter {
   const storageAdapter = (process.env.STORAGE_ADAPTER || 'memory').toLowerCase()
-  const forStoringProducts = new ForStoringProductsFactory().create(storageAdapter)
+  const forStoringProducts = new ForStoringProductsFactory()
+    .withSqlitePath(process.env.SQLITE_DB_PATH || './data/inventory.db')
+    .withFileSeed(process.env.INITIAL_DATA ?? 'data/products.json')
+    .create(storageAdapter)
   const forGettingTime = new ForGettingTimeSystemAdapter()
 
   const messageBus = new MessageBus()

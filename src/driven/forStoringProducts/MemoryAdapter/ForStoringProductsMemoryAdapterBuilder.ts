@@ -1,4 +1,4 @@
-import { StoredProduct } from '../../inventory/driven/forStoringProducts/ForStoringProducts'
+import { StoredProduct } from '../../../inventory/driven/forStoringProducts/ForStoringProducts'
 import { ForStoringProductsMemoryAdapter } from './MemoryAdapter'
 
 export class ForStoringProductsMemoryAdapterBuilder {

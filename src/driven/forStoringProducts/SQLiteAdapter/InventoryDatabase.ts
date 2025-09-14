@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3'
-import { StoredProduct } from '../../inventory/driven/forStoringProducts/ForStoringProducts'
+import { StoredProduct } from '../../../inventory/driven/forStoringProducts/ForStoringProducts'
 import path from 'path'
 import fs from 'fs'
 

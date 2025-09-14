@@ -59,12 +59,15 @@ Tip: The full OpenAPI spec is in openapi/openapi.yaml and is covered by tests in
 
 ## Project structure (high level)
 
-- src/index.ts: Express wiring and route registration
-- inventory/: Application core (commands/handlers)
-- driving/: HTTP adapters (route handlers)
-- driven/: Infrastructure adapters (storage, time, message bus dispatch)
+This project is organized as a monorepo following Hexagonal Architecture principles.
+
+- src/index.ts: Configurator (Express wiring and route registration)
+- inventory/: Hexagonal Application core (ports, business logic)
+- driving/: Primary adapters (API Rest)
+- driven/: Secondary adapters (storage, time, message bus dispatch)
 - openapi/: OpenAPI 3.1 definition
 - test/: Unit and E2E tests (Vitest)
+- lib/: Shared code that could be used by other projects
 
 ---
 
@@ -87,12 +90,13 @@ Tip: The full OpenAPI spec is in openapi/openapi.yaml and is covered by tests in
 ## Testing
 
 - Test runner: Vitest (see vitest.config.ts). Common commands:
-  - npm test — watch mode
-  - npm run test:run — run once
-  - npm run test:coverage — with coverage
-  - npm run test:api — OpenAPI E2E tests
+  - `npm test` — watch mode
+  - `npm run test:run` — run once
+  - `npm run test:coverage` — with coverage
+  - `npm run test:api` — OpenAPI E2E tests
 - Locations: test/ contains E2E and unit tests. Some unit tests may also live next to source files.
-- OpenAPI E2E tests: see test/e2e/\*. They hit the running app in-memory.
+- OpenAPI E2E tests: see [test/e2e/](test/e2e). They hit the running app in-memory. You can use
+  SQLit in tests by setting STORAGE_ADAPTER=sqlite in the .env.test file.
 - Database note: When STORAGE_ADAPTER=sqlite, database-related tests are executed inside a single
   long‑lived transaction. This keeps test data isolated and automatically rolled back at the end of
   the run, while allowing nested operations to use SAVEPOINTs.
@@ -103,5 +107,5 @@ For more details, including additional test commands and tips, see README-ARCHIV
 
 To keep this README concise, the previous long-form reference has been moved to:
 
-- README-ARCHIVE.md — full docs including testing, Docker details, CI notes, IDE debugging, and
-  sample frontend proxy configs.
+- [README-ARCHIVE.md](README-ARCHIVE.md) — full docs including testing, Docker details, CI notes,
+  IDE debugging, and sample frontend proxy configs.

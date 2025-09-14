@@ -10,11 +10,23 @@ detailed reference that existed before is still available below under “Additio
 
 - Prerequisites: Node 18+, npm
 - Install and run (local):
-  - npm install
-  - PORT=3000 npm run dev
+  - `npm install`
+  - `npm run env:from-dist`
+  - `npm run env:test`
+  - `PORT=3000 npm run dev`
 - Health check: curl http://localhost:3000/health
+- Test API: `npm run test:api`
 
 ## Environment variables
+
+- Generate .env from template:
+
+  - Local dev: `npm run env:from-dist` (creates .env by copying .env.dist)
+  - Testing: `npm run env:test`
+  - Production example:
+    `NODE_ENV=production STORAGE_ADAPTER=sqlite SQLITE_DB_PATH=/data/inventory.db npm run env:from-dist`
+  - Advanced:
+    `npm run env:from-dist -- --out .env.prod --dist .env.dist --set PORT=8080 --set LOG_LEVEL=warn`
 
 - PORT: Port the server listens on (example: 3000). Docker images expose 3000.
 - STORAGE_ADAPTER: Storage backend. Options: "memory" (default) or "sqlite".
@@ -75,8 +87,19 @@ This project is organized as a monorepo following Hexagonal Architecture princip
 
 - Development (Compose dev profile): `npm run compose:up:dev`
 - Production (Compose prod profile): `docker compose --profile prod up`
-- Change host port: `HOST_PORT=3001 docker compose up` (maps `HOST_PORT:3000`). The app listens on
-  `PORT` inside the container (default `3000`).
+- Change host port only (container still listens on 3000 by default):
+  `HOST_PORT=3001 docker compose up`
+- Change container internal port too:
+  - Compose: `HOST_PORT=4000 PORT=4000 docker compose up` (ports mapping uses
+    `${HOST_PORT:-3000}:${PORT:-3000}`)
+  - CLI: `docker run -e PORT=4000 -p 4000:4000 api-inventory`
+- Override storage adapter/path at runtime (compose): `STORAGE_ADAPTER=memory docker compose up`
+- Override from CLI:
+  `docker run -e STORAGE_ADAPTER=sqlite -e SQLITE_DB_PATH=/data/inventory.db -p 3000:3000 api-inventory`
+- Notes:
+  - The image contains a generated .env with safe defaults, but any env provided by docker-compose
+    or `docker run -e` overrides those values.
+  - Healthcheck respects `PORT`. If you change `PORT`, ensure your ports mapping matches.
 - ESM: Extensionless imports are supported in dev and prod containers.
 
 ## Frontend development

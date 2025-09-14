@@ -25,7 +25,10 @@
     "compose:up": "docker compose up",
     "compose:up:dev": "docker compose --profile dev up",
     "compose:down": "docker compose down",
-    "compose:build": "docker compose build"
+    "compose:build": "docker compose build",
+    "env:from-dist": "node scripts/generate-env.mjs",
+    "env:prod": "NODE_ENV=production node scripts/generate-env.mjs --out .env",
+    "env:test": "NODE_ENV=test node scripts/generate-env.mjs --out .env.test --set PORT=3333 --set STORAGE_ADAPTER=memory --set SQLITE_DB_PATH=./data/inventory.test.db --set NODE_ENV=test"
   },
   "keywords": [],
   "author": "",

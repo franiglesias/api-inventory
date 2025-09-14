@@ -1,5 +1,7 @@
 # Multi-stage Dockerfile for Express TypeScript API
 
+# Multi-stage Dockerfile for Express TypeScript API
+
 # Stage 1: Build stage
 FROM node:18-alpine AS builder
 
@@ -14,6 +16,9 @@ RUN npm ci --only=production=false
 
 # Copy source code
 COPY . .
+
+# Generate production .env from template (will be copied into the final image)
+RUN NODE_ENV=production STORAGE_ADAPTER=sqlite SQLITE_DB_PATH=/data/inventory.db node scripts/generate-env.mjs --out .env
 
 # Build the application
 RUN npm run build
@@ -39,9 +44,11 @@ RUN npm ci --only=production && npm cache clean --force
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
 
+# Copy generated .env from builder
+COPY --from=builder /app/.env ./.env
+
 # Prepare data directory for SQLite
 RUN mkdir -p /data && chown -R node:node /data
-ENV SQLITE_DB_PATH=/data/inventory.db
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
@@ -56,7 +63,7 @@ EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+  CMD node -e "const p=process.env.PORT||3000; require('http').get(`http://localhost:${p}/health`, (res)=>process.exit(res.statusCode===200?0:1)).on('error',()=>process.exit(1));"
 
 # Start the application
 CMD ["node", "dist/index.js"]

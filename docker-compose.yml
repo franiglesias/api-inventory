@@ -6,14 +6,14 @@ services:
       dockerfile: Dockerfile
       target: development
     ports:
-      - '${HOST_PORT:-3000}:3000'
+      - '${HOST_PORT:-3000}:${PORT:-3000}'
     volumes:
       - .:/app
       - /app/node_modules
       - sqlite-data:/data
     environment:
       - NODE_ENV=development
-      - PORT=3000
+      - PORT=${PORT:-3000}
       # Uncomment to test SQLite in dev:
       # - STORAGE_ADAPTER=sqlite
       # - SQLITE_DB_PATH=/data/inventory.db
@@ -28,10 +28,10 @@ services:
       dockerfile: Dockerfile
       target: production
     ports:
-      - '${HOST_PORT:-3000}:3000'
+      - '${HOST_PORT:-3000}:${PORT:-3000}'
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=${PORT:-3000}
       - STORAGE_ADAPTER=sqlite
       - SQLITE_DB_PATH=/data/inventory.db
     volumes:
@@ -46,10 +46,10 @@ services:
       dockerfile: Dockerfile
       target: production
     ports:
-      - '${HOST_PORT:-3000}:3000'
+      - '${HOST_PORT:-3000}:${PORT:-3000}'
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=${PORT:-3000}
       - STORAGE_ADAPTER=sqlite
       - SQLITE_DB_PATH=/data/inventory.db
     volumes:

@@ -32,5 +32,8 @@ jobs:
       - name: Lint (Prettier check)
         run: npm run lint:format
 
+      - name: Dependency rules
+        run: npm run lint:rules
+
       - name: Run API tests
         run: npm run test:api

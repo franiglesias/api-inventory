@@ -13,7 +13,7 @@ export class ForUpdatingStockApiAdapter {
     this.forDispatching = forDispatching
   }
 
-  public postAddUnits(
+  public async postAddUnits(
     req: Request<
       {
         sku: string
@@ -25,38 +25,21 @@ export class ForUpdatingStockApiAdapter {
     >,
     response: Response<any, Record<string, any>, number>,
   ) {
-    const body = req.body || {}
-    const params = req.params
-
-    let sku = params.sku
-    const units = body.units
-
-    if (!sku.trim()) {
-      response.status(400).json({ error: 'SKU no válido' })
-      return
-    }
-    sku = sku.trim().toLowerCase()
-
-    if (typeof units !== 'number' || units <= 0) {
-      response.status(400).json({ error: 'Units no válido o menor igual a 0' })
-      return
-    }
-
-    try {
-      const addUnits = new AddUnits(sku, units)
-      const product = this.forDispatching.dispatch(addUnits)
-      response.status(200).json({ product })
-    } catch (error) {
-      if (error instanceof SkuNotFound) {
-        response.status(404).json({ error: error.message })
-      }
-      response
-        .status(500)
-        .json({ error: 'Error interno del servidor: ' + (error as Error).message })
-    }
+    return this.handleUnits(
+      req,
+      response,
+      (sku, units) => new AddUnits(sku, units),
+      (error: unknown) => {
+        if (error instanceof SkuNotFound) {
+          response.status(404).json({ error: error.message })
+          return true
+        }
+        return false
+      },
+    )
   }
 
-  public postRemoveUnits(
+  public async postRemoveUnits(
     req: Request<
       {
         sku: string
@@ -68,6 +51,30 @@ export class ForUpdatingStockApiAdapter {
     >,
     response: Response<any, Record<string, any>, number>,
   ) {
+    return this.handleUnits(
+      req,
+      response,
+      (sku, units) => new RemoveUnits(sku, units),
+      (error: unknown) => {
+        if (error instanceof SkuNotFound) {
+          response.status(404).json({ error: (error as SkuNotFound).message, code: 404 })
+          return true
+        }
+        if (error instanceof NegativeStock) {
+          response.status(400).json({ error: (error as NegativeStock).message, code: 400 })
+          return true
+        }
+        return false
+      },
+    )
+  }
+
+  private async handleUnits(
+    req: Request<{ sku: string }, any, any, ParsedQs, Record<string, any>>,
+    response: Response<any, Record<string, any>, number>,
+    buildCommand: (sku: string, units: number) => any,
+    handleError?: (error: unknown) => boolean,
+  ) {
     const body = req.body || {}
     const params = req.params
 
@@ -78,7 +85,7 @@ export class ForUpdatingStockApiAdapter {
       response.status(400).json({ error: 'SKU no válido' })
       return
     }
-    sku = sku.trim().toLowerCase()
+    sku = sku.trim()
 
     if (typeof units !== 'number' || units <= 0) {
       response.status(400).json({ error: 'Units no válido o menor igual a 0' })
@@ -86,16 +93,11 @@ export class ForUpdatingStockApiAdapter {
     }
 
     try {
-      const addUnits = new RemoveUnits(sku, units)
-      const product = this.forDispatching.dispatch(addUnits)
+      const command = buildCommand(sku, units)
+      const product = await this.forDispatching.dispatch(command)
       response.status(200).json({ product })
     } catch (error) {
-      if (error instanceof SkuNotFound) {
-        response.status(404).json({ error: error.message, code: 404 })
-      }
-      if (error instanceof NegativeStock) {
-        response.status(400).json({ error: error.message, code: 400 })
-      }
+      if (handleError && handleError(error)) return
       response
         .status(500)
         .json({ error: 'Error interno del servidor: ' + (error as Error).message })

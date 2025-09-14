@@ -5,6 +5,7 @@ import fs from 'fs'
 
 export class InventoryDatabase {
   private readonly db: Database.Database
+  private currentSavepoint?: string | undefined
 
   private constructor(db: Database.Database) {
     this.db = db
@@ -17,6 +18,15 @@ export class InventoryDatabase {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
 
     const db = new Database(absPath)
+
+    // Improve write visibility and concurrency for tests and E2E
+    try {
+      db.pragma('journal_mode = WAL')
+      db.pragma('synchronous = NORMAL')
+      db.pragma('busy_timeout = 2000')
+    } catch (_) {
+      // ignore pragma errors
+    }
 
     // Create schema if needed
     db.exec(`
@@ -34,37 +44,14 @@ export class InventoryDatabase {
       );
     `)
 
-    // When running tests with sqlite, keep all changes inside a single transaction
-    // so the database stays clean after the test process exits.
-    if (process.env.NODE_ENV === 'test') {
-      try {
-        // Start a long-lived transaction. Any nested transactions will use SAVEPOINTs.
-        db.exec('BEGIN IMMEDIATE')
-        // Roll back all changes when the process exits.
-        process.once('exit', () => {
-          try {
-            db.exec('ROLLBACK')
-          } catch (_) {
-            // ignore if already closed or rolled back
-          }
-        })
-        // Also handle common termination signals during local runs
-        for (const sig of ['SIGINT', 'SIGTERM']) {
-          process.once(sig as NodeJS.Signals, () => {
-            try {
-              db.exec('ROLLBACK')
-            } catch (_) {}
-            process.exit(0)
-          })
-        }
-      } catch (e) {
-        // If BEGIN fails, continue without the global test transaction
-      }
-    }
-
     const inventory = new InventoryDatabase(db)
     if (seed && seed.length > 0) {
       inventory.seed(seed)
+    }
+
+    // Expose for tests so each test can run within its own transaction
+    if (process.env.NODE_ENV === 'test') {
+      ;(globalThis as any).__inventoryDb = inventory
     }
 
     return inventory
@@ -94,6 +81,32 @@ export class InventoryDatabase {
       }
     })
     tx(seed)
+  }
+
+  // Begin a transaction scope for a single test using SAVEPOINT
+  beginTestCase() {
+    try {
+      const name = 'vitest_case'
+      this.db.exec(`SAVEPOINT ${name}`)
+      this.currentSavepoint = name
+    } catch (_) {
+      // ignore
+    }
+  }
+
+  // Rollback the transaction scope for a single test
+  rollbackTestCase() {
+    if (!this.currentSavepoint) return
+    const name = this.currentSavepoint
+    try {
+      this.db.exec(`ROLLBACK TO SAVEPOINT ${name}`)
+    } catch (_) {
+    } finally {
+      try {
+        this.db.exec(`RELEASE SAVEPOINT ${name}`)
+      } catch (_) {}
+      this.currentSavepoint = undefined
+    }
   }
 
   prepare(query: string): any {

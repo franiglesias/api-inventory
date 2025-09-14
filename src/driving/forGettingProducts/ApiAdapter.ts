@@ -10,12 +10,12 @@ export class ForGettingProductsApiAdapter {
     this.forDispatching = forDispatching
   }
 
-  public getProducts(
+  public async getProducts(
     _req: Request<{}, any, any, ParsedQs, Record<string, any>>,
     response: Response<any, Record<string, any>, number>,
-  ): void {
+  ): Promise<void> {
     const command = new GetProducts()
-    const productList = this.forDispatching.dispatch(command)
+    const productList = await this.forDispatching.dispatch(command)
     response.status(200).json(productList)
   }
 }

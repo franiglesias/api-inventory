@@ -11,7 +11,7 @@ export class ForRegisterProductsApiAdapter {
     this.forDispatching = forDispatching
   }
 
-  public postProducts(
+  public async postProducts(
     req: Request<{}, any, any, ParsedQs, Record<string, any>>,
     response: Response<any, Record<string, any>, number>,
   ) {
@@ -48,7 +48,7 @@ export class ForRegisterProductsApiAdapter {
     )
 
     try {
-      const product = this.forDispatching.dispatch(command)
+      const product = await this.forDispatching.dispatch(command)
       response.status(201).json(product)
     } catch (e) {
       if (e instanceof DuplicatedProductSku) {

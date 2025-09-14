@@ -10,6 +10,9 @@ export default defineConfig({
       NODE_ENV: 'test',
     },
 
+    // Global setup files to wrap each test in a transaction
+    setupFiles: ['test/setup.ts'],
+
     // Coverage configuration
     coverage: {
       provider: 'v8',

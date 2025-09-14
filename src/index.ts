@@ -22,10 +22,6 @@ import { RemoveUnitsHandler } from './inventory/driving/forUpdatingStock/RemoveU
 import { ForGettingTimeSystemAdapter } from './driven/forGettingTime/SystemAdapter'
 import { ForStoringProductsFactory } from './driven/forStoringProducts/ForStoringProductsFactory'
 
-const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
-
-dotenv.config({ path: envFile })
-
 function buildApplication(): MessageBusAdapter {
   const forStoringProducts = new ForStoringProductsFactory()
     .withSqlitePath(process.env.SQLITE_DB_PATH || './data/inventory.db')
@@ -42,12 +38,17 @@ function buildApplication(): MessageBusAdapter {
   messageBus.register(RemoveUnits, new RemoveUnitsHandler(forStoringProducts, forGettingTime))
   return new MessageBusAdapter(messageBus)
 }
-const forDispatching = buildApplication()
 
+const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
+
+dotenv.config({ path: envFile })
+
+const PORT = process.env.PORT || process.env.NODE_ENV == 'test' ? '3333' : '3000' // Sensible default for local development
+
+const forDispatching = buildApplication()
 const forUpdatingStock = new ForUpdatingStockApiAdapter(forDispatching)
 
 const inventoryRouter = express.Router()
-
 inventoryRouter.post('/products/:sku/add', forUpdatingStock.postAddUnits.bind(forUpdatingStock))
 inventoryRouter.post(
   '/products/:sku/remove',
@@ -73,15 +74,32 @@ app.use(express.json())
 app.use(cors())
 app.options(/.*/, cors())
 
-const PORT = process.env.PORT || '3000'
-
 app.use('/', inventoryRouter)
 
-app
-  .listen(PORT, () => {
-    console.log('Server running at PORT: ', PORT)
+// Avoid starting multiple servers when tests import this module repeatedly
+declare global {
+  // eslint-disable-next-line no-var
+  var __inventoryServer: import('http').Server | undefined
+}
+
+function startServer() {
+  if (globalThis.__inventoryServer) return globalThis.__inventoryServer
+  const server = app.listen(PORT, () => {
+    console.log('[SERVER] Server running at PORT: ', PORT)
+    console.log('[SERVER] Environment: ', process.env.NODE_ENV)
   })
-  .on('error', (error) => {
-    // gracefully handle error
-    throw new Error(error.message)
+  server.on('error', (error: any) => {
+    if ((error as any)?.code === 'EADDRINUSE') {
+      console.warn(`Port ${PORT} in use, assuming server is already running.`)
+      // do not throw here to avoid unhandled errors in tests
+    } else {
+      throw error
+    }
   })
+  globalThis.__inventoryServer = server
+  return server
+}
+
+startServer()
+
+export { app }

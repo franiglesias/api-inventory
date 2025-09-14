@@ -8,7 +8,7 @@ export interface MessageHandler<T> {
 export class MessageBus {
   private handlers: Map<string, MessageHandler<unknown>> = new Map()
 
-  dispatch(command: Message): any {
+  public async dispatch(command: Message): Promise<any> {
     const handler = this.handlers.get(command.constructor.name)
     console.log('[MessageBus] Dispatching:', command.constructor.name)
     if (handler === undefined) throw new UnsupportedCommand()

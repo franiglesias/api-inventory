@@ -10,7 +10,8 @@ export class MessageBusAdapter implements ForDispatchingMessages {
   constructor(messageBus: MessageBus) {
     this.messageBus = messageBus
   }
-  dispatch(message: Message): any {
-    return this.messageBus.dispatch(message as LibMessage)
+
+  async dispatch(message: Message): Promise<any> {
+    return await this.messageBus.dispatch(message as LibMessage)
   }
 }

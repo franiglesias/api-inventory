@@ -1,13 +1,10 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 async function wait(ms: number) {
   return new Promise((r) => setTimeout(r, ms))
 }
 
 async function startServer() {
-  // The app reads PORT from env and starts immediately when importing src/index.ts
-  process.env.PORT = process.env.PORT || '3333'
-  // Dynamically import so PORT is set
   await import('../../src/index')
 }
 
@@ -38,22 +35,12 @@ async function post(path: string, body?: any) {
 }
 
 describe('Inventory API E2E (OpenAPI scenarios)', () => {
-  let fixtureSku: string = ''
   beforeAll(async () => {
-    if (!process.env.PORT) process.env.PORT = '3000'
+    // Prefer port from .env.test; fallback to 3333 to avoid conflicts
+    if (!process.env.PORT) process.env.PORT = '3333'
     await startServer()
     // Give it a moment to bind the port
     await wait(200)
-    // Create our own product fixture for stock tests
-    fixtureSku = 'e2e-sku-abc-001'
-    await post('/products', {
-      name: 'E2E Fixture Product',
-      description: 'Created by e2e beforeAll',
-      sku: fixtureSku,
-      initialStock: 10,
-      minStock: 1,
-      imageUrl: 'https://example.com/images/e2e-fixture.jpg',
-    })
   })
 
   afterAll(async () => {
@@ -84,7 +71,7 @@ describe('Inventory API E2E (OpenAPI scenarios)', () => {
   })
 
   describe('Create product', () => {
-    const base = {
+    const productData = {
       name: 'Test Product',
       description: 'A product for testing',
       sku: 'TEST-SKU-001',
@@ -93,14 +80,15 @@ describe('Inventory API E2E (OpenAPI scenarios)', () => {
     }
 
     it('creates a product when the payload is valid', async () => {
-      const res = await post('/products', base)
+      const res = await post('/products', productData)
       expect(res.status).toBe(201)
-      expect(res.body).toHaveProperty('sku', base.sku)
+      expect(res.body).toHaveProperty('sku', productData.sku)
       expect(res.body).toHaveProperty('stock')
     })
 
     it('rejects duplicate SKUs', async () => {
-      const res = await post('/products', base)
+      await post('/products', productData)
+      const res = await post('/products', productData)
       expect(res.status).toBe(409)
       expect(res.body).toHaveProperty('error')
     })
@@ -113,6 +101,18 @@ describe('Inventory API E2E (OpenAPI scenarios)', () => {
   })
 
   describe('Add stock', () => {
+    const fixtureSku = 'TEST-SKU-ADD'
+    const base = {
+      name: 'Test Product',
+      description: 'A product for testing',
+      sku: fixtureSku,
+      initialStock: 5,
+      minStock: 1,
+    }
+    beforeEach(async () => {
+      await post('/products', base)
+    })
+
     it('adds units to an existing product', async () => {
       const res = await post(`/products/${fixtureSku}/add`, { units: 2 })
       expect(res.status).toBe(200)
@@ -133,6 +133,18 @@ describe('Inventory API E2E (OpenAPI scenarios)', () => {
   })
 
   describe('Remove stock', () => {
+    const fixtureSku = 'TEST-SKU-REMOVE'
+    const base = {
+      name: 'Test Product',
+      description: 'A product for testing',
+      sku: fixtureSku,
+      initialStock: 5,
+      minStock: 1,
+    }
+    beforeEach(async () => {
+      await post('/products', base)
+    })
+
     it('removes units from an existing product', async () => {
       const res = await post(`/products/${fixtureSku}/remove`, { units: 1 })
       expect(res.status).toBe(200)

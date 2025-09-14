@@ -10,12 +10,12 @@ export class ForCheckingHealthApiAdapter {
     this.forDispatching = forDispatching
   }
 
-  public getHealth(
+  public async getHealth(
     req: Request<{}, any, any, ParsedQs, Record<string, any>>,
     response: Response<any, Record<string, any>, number>,
-  ): void {
+  ): Promise<void> {
     const getHealth = new GetHealth()
-    if (this.forDispatching.dispatch(getHealth)) {
+    if (await this.forDispatching.dispatch(getHealth)) {
       response.status(200).json({
         status: 'ok',
       })

@@ -20,6 +20,23 @@ export class ForStoringProductsSqliteAdapter implements ForStoringProducts {
     this.seedIfEmpty(seed)
   }
 
+  retrieveBySku(sku: string): StoredProduct | undefined {
+    const row = this.db.prepare('SELECT * FROM products WHERE sku = ?').get(sku) as StoredProduct
+    if (!row) return undefined
+    return {
+      id: String(row.id),
+      name: String(row.name),
+      description: String(row.description),
+      sku: String(row.sku),
+      imageUrl:
+        row.imageUrl !== null && row.imageUrl !== undefined ? String(row.imageUrl) : undefined,
+      stock: Number(row.stock),
+      minStock: Number(row.minStock),
+      createdAt: new Date(String(row.createdAt)),
+      updatedAt: row.updatedAt ? new Date(String(row.updatedAt)) : undefined,
+    } as StoredProduct
+  }
+
   private init() {
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS products

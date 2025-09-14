@@ -13,7 +13,6 @@ export class GetProductsHandler {
   }
 
   public handle(_getProducts: GetProducts): Product[] {
-    console.log('GetProductsHandler.handle()')
     let storedProducts: StoredProduct[] = this.forStoringProducts.retrieveAll()
 
     return storedProducts.map(

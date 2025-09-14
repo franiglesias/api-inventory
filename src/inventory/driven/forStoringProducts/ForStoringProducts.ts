@@ -16,4 +16,6 @@ export interface ForStoringProducts {
   retrieveAll(): StoredProduct[]
 
   store(productToStore: StoredProduct): void
+
+  retrieveBySku(sku: string): StoredProduct | undefined
 }

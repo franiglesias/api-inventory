@@ -6,15 +6,15 @@ async function wait(ms: number) {
 
 async function startServer() {
   // The app reads PORT from env and starts immediately when importing src/index.ts
-  process.env.PORT = process.env.PORT || '3000'
+  process.env.PORT = process.env.PORT || '3333'
   // Dynamically import so PORT is set
   await import('../../src/index')
 }
 
 function buildUrl(path: string) {
   // Compute base URL locally to avoid any scope issues with BASE_URL
-  const RAW = 'http://localhost:3000'
-  const BASE = (RAW && RAW.trim().length > 0 ? RAW : 'http://localhost:3000').replace(/\/+$/, '')
+  const RAW = 'http://localhost:' + process.env.PORT
+  const BASE = (RAW && RAW.trim().length > 0 ? RAW : 'http://localhost:3333').replace(/\/+$/, '')
   const p = path.startsWith('/') ? path : `/${path}`
   return `${BASE}${p}`
 }

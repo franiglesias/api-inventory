@@ -10,6 +10,12 @@ export class ForStoringProductsMemoryAdapter implements ForStoringProducts {
     this.products = products
   }
 
+  retrieveBySku(sku: string): StoredProduct | undefined {
+    return this.products.find((product: StoredProduct): boolean => {
+      return product.sku.toLowerCase() === sku.toLowerCase()
+    })
+  }
+
   store(productToStore: StoredProduct): void {
     const index = this.products.findIndex((p) => p.id === productToStore.id)
     if (index !== -1) {

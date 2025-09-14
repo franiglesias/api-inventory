@@ -23,6 +23,7 @@ import { RemoveUnits } from './inventory/driving/forUpdatingStock/RemoveUnits'
 import { RemoveUnitsHandler } from './inventory/driving/forUpdatingStock/RemoveUnitsHandler'
 import { readProductsFromFile } from './lib/read-products'
 import { ForGettingTimeSystemAdapter } from './driven/forGettingTime/SystemAdapter'
+import Database from 'better-sqlite3'
 
 // Load environment variables from the appropriate file.
 // Vitest sets NODE_ENV to 'test' by default; ensure we read .env.test in that case.
@@ -33,13 +34,66 @@ const inventoryRouter = express.Router()
 
 function buildApplication(): MessageBusAdapter {
   const storageAdapter = (process.env.STORAGE_ADAPTER || 'memory').toLowerCase()
-  const initialProducts = readProductsFromFile()
-  const sqlitePath = process.env.SQLITE_DB_PATH || './data/inventory.db'
+  let initialProducts = readProductsFromFile()
+  let sqlitePath = process.env.SQLITE_DB_PATH || './data/inventory.db'
 
-  const forStoringProducts =
-    storageAdapter === 'sqlite' && process.env.NODE_ENV !== 'test'
-      ? new ForStoringProductsSqliteAdapter(sqlitePath, initialProducts)
-      : new ForStoringProductsMemoryAdapter(initialProducts)
+  let forStoringProducts: ForStoringProductsSqliteAdapter | ForStoringProductsMemoryAdapter
+
+  if (process.env.NODE_ENV === 'test') {
+    console.log('Running tests')
+    initialProducts = []
+    if (storageAdapter === 'sqlite') {
+      console.log('Using SQLite adapter for test')
+      const sqlitePath = './data/inventory.test.db'
+      const db = new Database(sqlitePath)
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS products
+        (
+          id
+            TEXT
+            PRIMARY
+              KEY,
+          name
+            TEXT
+            NOT
+              NULL,
+          description
+            TEXT
+            NOT
+              NULL,
+          sku
+            TEXT
+            NOT
+              NULL
+            UNIQUE,
+          imageUrl
+            TEXT,
+          stock
+            INTEGER
+            NOT
+              NULL,
+          minStock
+            INTEGER
+            NOT
+              NULL,
+          createdAt
+            TEXT
+            NOT
+              NULL,
+          updatedAt
+            TEXT
+        );`)
+    }
+  } else {
+    console.log('Running development')
+  }
+  if (storageAdapter === 'sqlite') {
+    console.log('Using SQLite adapter')
+    forStoringProducts = new ForStoringProductsSqliteAdapter(sqlitePath, initialProducts)
+  } else {
+    console.log('Using Memory adapter')
+    forStoringProducts = new ForStoringProductsMemoryAdapter(initialProducts)
+  }
 
   const forGettingTime = new ForGettingTimeSystemAdapter()
 

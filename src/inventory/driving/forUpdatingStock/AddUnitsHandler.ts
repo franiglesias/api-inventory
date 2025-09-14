@@ -27,9 +27,7 @@ export class AddUnitsHandler implements MessageHandler<AddUnits> {
   }
 
   private retrieveProductData(sku: string) {
-    const storedProduct = this.forStoringProducts.retrieveAll().find((product) => {
-      return product.sku.toLowerCase() === sku.toLowerCase()
-    })
+    const storedProduct = this.forStoringProducts.retrieveBySku(sku)
 
     if (!storedProduct) throw new SkuNotFound(sku)
     return storedProduct

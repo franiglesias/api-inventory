@@ -16,11 +16,9 @@ export class RegisterProductHandler implements MessageHandler<RegisterProduct> {
   }
 
   public handle(registerProduct: RegisterProduct): StoredProduct {
-    const skuExists = this.forStoringProducts
-      .retrieveAll()
-      .some((product) => product.sku === registerProduct.sku)
+    const existingProduct = this.forStoringProducts.retrieveBySku(registerProduct.sku)
 
-    if (skuExists) throw new DuplicatedProductSku(registerProduct.sku)
+    if (existingProduct) throw new DuplicatedProductSku(registerProduct.sku)
 
     const product = Product.register(
       this.generateId(),

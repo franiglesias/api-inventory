@@ -27,13 +27,11 @@ export class RemoveUnitsHandler implements MessageHandler<RemoveUnits> {
   }
 
   private retrieveProductData(sku: string) {
-    const product = this.forStoringProducts.retrieveAll().find((product) => {
-      return product.sku.toLowerCase() === sku.toLowerCase()
-    })
+    const storedProduct = this.forStoringProducts.retrieveBySku(sku)
 
-    if (!product) {
+    if (!storedProduct) {
       throw new SkuNotFound(sku)
     }
-    return product
+    return storedProduct
   }
 }

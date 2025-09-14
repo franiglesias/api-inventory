@@ -11,7 +11,7 @@ export class ForGettingProductsApiAdapter {
   }
 
   public getProducts(
-    req: Request<{}, any, any, ParsedQs, Record<string, any>>,
+    _req: Request<{}, any, any, ParsedQs, Record<string, any>>,
     response: Response<any, Record<string, any>, number>,
   ): void {
     const command = new GetProducts()

@@ -18,20 +18,23 @@ export class RemoveUnitsHandler implements MessageHandler<RemoveUnits> {
   }
 
   handle(removeUnits: RemoveUnits): StoredProduct {
-    const product = this.retrieveProductData(removeUnits.sku)
-
-    const updated = Product.fromStored(product).removeStock(removeUnits.units, this.forGettingTime)
-
-    this.forStoringProducts.store(updated.toStoredProduct())
+    const updated = this.getProductBySku(removeUnits.sku).removeStock(
+      removeUnits.units,
+      this.forGettingTime,
+    )
+    this.storeUpdatedProduct(updated)
     return updated.toStoredProduct()
   }
 
-  private retrieveProductData(sku: string) {
+  private storeUpdatedProduct(updated: Product) {
+    this.forStoringProducts.store(updated.toStoredProduct())
+  }
+
+  private getProductBySku(sku: string) {
     const storedProduct = this.forStoringProducts.retrieveBySku(sku)
 
-    if (!storedProduct) {
-      throw new SkuNotFound(sku)
-    }
-    return storedProduct
+    if (!storedProduct) throw new SkuNotFound(sku)
+
+    return Product.fromStored(storedProduct)
   }
 }

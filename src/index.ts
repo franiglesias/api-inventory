@@ -26,17 +26,15 @@ const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
 
 dotenv.config({ path: envFile })
 
-const inventoryRouter = express.Router()
-
 function buildApplication(): MessageBusAdapter {
-  const storageAdapter = (process.env.STORAGE_ADAPTER || 'memory').toLowerCase()
   const forStoringProducts = new ForStoringProductsFactory()
     .withSqlitePath(process.env.SQLITE_DB_PATH || './data/inventory.db')
     .withFileSeed(process.env.INITIAL_DATA ?? 'data/products.json')
-    .create(storageAdapter)
+    .create((process.env.STORAGE_ADAPTER || 'memory').toLowerCase())
   const forGettingTime = new ForGettingTimeSystemAdapter()
 
   const messageBus = new MessageBus()
+
   messageBus.register(GetHealth, new GetHealthHandler())
   messageBus.register(GetProducts, new GetProductsHandler(forStoringProducts))
   messageBus.register(RegisterProduct, new RegisterProductHandler(forStoringProducts))
@@ -44,10 +42,12 @@ function buildApplication(): MessageBusAdapter {
   messageBus.register(RemoveUnits, new RemoveUnitsHandler(forStoringProducts, forGettingTime))
   return new MessageBusAdapter(messageBus)
 }
-
 const forDispatching = buildApplication()
 
 const forUpdatingStock = new ForUpdatingStockApiAdapter(forDispatching)
+
+const inventoryRouter = express.Router()
+
 inventoryRouter.post('/products/:sku/add', forUpdatingStock.postAddUnits.bind(forUpdatingStock))
 inventoryRouter.post(
   '/products/:sku/remove',
@@ -71,8 +71,6 @@ app.use(express.json())
 
 // Enable CORS for all routes (simple default for frontend development)
 app.use(cors())
-// Express 5 + path-to-regexp v6 no longer accepts '*' as a route path.
-// Use a catch-all pattern that matches any path for preflight requests.
 app.options(/.*/, cors())
 
 const PORT = process.env.PORT || '3000'

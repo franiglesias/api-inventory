@@ -16,9 +16,7 @@ export class RegisterProductHandler implements MessageHandler<RegisterProduct> {
   }
 
   public handle(registerProduct: RegisterProduct): StoredProduct {
-    const existingProduct = this.forStoringProducts.retrieveBySku(registerProduct.sku)
-
-    if (existingProduct) throw new DuplicatedProductSku(registerProduct.sku)
+    this.assertUniqueSku(registerProduct.sku)
 
     const product = Product.register(
       this.generateId(),
@@ -30,11 +28,21 @@ export class RegisterProductHandler implements MessageHandler<RegisterProduct> {
       registerProduct.imageUrl,
     )
 
+    this.storeProduct(product)
+
+    return product.toStoredProduct()
+  }
+
+  private storeProduct(product: Product): void {
     const productToStore: StoredProduct = product.toStoredProduct()
 
     this.forStoringProducts.store(productToStore)
+  }
 
-    return productToStore
+  private assertUniqueSku(sku: string): void {
+    const existingProduct = this.forStoringProducts.retrieveBySku(sku)
+
+    if (existingProduct) throw new DuplicatedProductSku(sku)
   }
 
   private generateId() {

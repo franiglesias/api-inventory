@@ -4,8 +4,9 @@ import {
   StoredProduct,
 } from '../../driven/forStoringProducts/ForStoringProducts'
 import { Product } from '../../Product'
+import { MessageHandler } from '../../driven/forDispatchingMessages/ForDispatchingMessages'
 
-export class GetProductsHandler {
+export class GetProductsHandler implements MessageHandler<GetProducts> {
   private forStoringProducts: ForStoringProducts
 
   constructor(forStoringProducts: ForStoringProducts) {

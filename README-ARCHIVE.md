@@ -1,4 +1,60 @@
-## Additional details
+# API Inventory — Reference (Archive)
+
+This document is the long-form reference for the project. It mirrors the current codebase and
+package.json scripts. For a concise overview, see README.md.
+
+<!-- TOC -->
+
+- [API Inventory — Reference (Archive)](#api-inventory--reference-archive)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Available Commands](#available-commands)
+    - [Development](#development)
+    - [Testing with Vitest](#testing-with-vitest)
+    - [Docker](#docker)
+      - [Docker Commands](#docker-commands)
+      - [Docker Compose](#docker-compose)
+    - [Environment](#environment)
+  - [Project Structure](#project-structure)
+  - [Testing Setup](#testing-setup)
+    - [Features](#features)
+    - [Test Commands](#test-commands)
+    - [Test File Patterns](#test-file-patterns)
+    - [Coverage Reports](#coverage-reports)
+  - [Docker Support](#docker-support)
+    - [Docker Files](#docker-files)
+    - [Docker Commands (NPM Scripts)](#docker-commands-npm-scripts)
+    - [Quick Start with Docker](#quick-start-with-docker)
+    - [Manual Docker Commands](#manual-docker-commands)
+    - [Docker Architecture](#docker-architecture)
+    - [Force Docker to rebuild (images, containers, volumes)](#force-docker-to-rebuild-images-containers-volumes)
+  - [Development Workflow](#development-workflow)
+    - [Local Development](#local-development)
+    - [Docker Development](#docker-development)
+    - [Production Build](#production-build)
+  - [Testing Strategy](#testing-strategy)
+    - [Test Types](#test-types)
+    - [Writing Tests](#writing-tests)
+    - [Test Configuration](#test-configuration)
+  - [Debugging in IntelliJ IDEA](#debugging-in-intellij-idea)
+    - [Option A: Use the provided Run/Debug configurations](#option-a-use-the-provided-rundebug-configurations)
+    - [Option B: Create an NPM configuration manually](#option-b-create-an-npm-configuration-manually)
+    - [Option C: Create a Node.js configuration manually](#option-c-create-a-nodejs-configuration-manually)
+    - [Option D: Attach to a running process](#option-d-attach-to-a-running-process)
+    - [Debugging tests (Vitest)](#debugging-tests-vitest)
+    - [Troubleshooting](#troubleshooting)
+  - [License](#license)
+- [API Inventory](#api-inventory)
+  - [Development](#development-1)
+  - [Continuous Integration: Docker Publish via GitHub Actions](#continuous-integration-docker-publish-via-github-actions)
+  - [Running with Docker Compose when port 3000 is in use](#running-with-docker-compose-when-port-3000-is-in-use)
+  - [Docker Compose profiles note](#docker-compose-profiles-note)
+  - [Using this API from a frontend during development](#using-this-api-from-a-frontend-during-development)
+    - [1) Frontend runs on your host (recommended)](#1-frontend-runs-on-your-host-recommended)
+    - [2) Frontend runs in Docker](#2-frontend-runs-in-docker)
+    - [3) Example API calls from a frontend](#3-example-api-calls-from-a-frontend)
+
+<!-- TOC -->
 
 ## Prerequisites
 
@@ -10,20 +66,22 @@
 
 ```bash
 npm install
+npm run env:from-dist
+npm run env:test
 ```
 
 ## Available Commands
 
 ### Development
 
-- `npm run dev` - Start development server using Node's ts-node ESM loader
+- `npm run dev` - Start development server with tsx (ESM)
 - `npm run build` - Compile TypeScript to JavaScript
 - `npm run start` - Start production server (requires build first)
 
 ### Testing with Vitest
 
 - `npm test` - Run tests in watch mode
-- `npm run test:api` - Run API end to ent tests
+- `npm run test:api` - Run API end-to-end tests
 - `npm run test:run` - Run tests once and exit
 - `npm run test:watch` - Run tests in watch mode (explicit)
 - `npm run test:ui` - Open Vitest UI in browser for interactive testing
@@ -31,12 +89,33 @@ npm install
 
 ### Docker
 
+#### Docker Commands
+
 - `npm run docker:build` - Build Docker image
 - `npm run docker:run` - Run Docker container on port 3000
 - `npm run compose:up` - Start with Docker Compose (production)
+
+#### Docker Compose
+
 - `npm run compose:up:dev` - Start development environment with Docker Compose
 - `npm run compose:down` - Stop Docker Compose services
 - `npm run compose:build` - Build Docker Compose services
+
+### Environment
+
+The following commands use .env.dist as a template for creating an .env file prepared for an
+environment.
+
+- `npm run env:from-dist -- --out [file]` - Creates a default `.env` file
+- `npm run env:prod` - Creates an .env file for production
+- `npm run env:test` - Creates an .env file for testing
+
+Examples:
+
+- Customized production:
+  `NODE_ENV=production STORAGE_ADAPTER=sqlite SQLITE_DB_PATH=/data/inventory.db npm run env:from-dist`
+- Advanced:
+  `npm run env:from-dist -- --out .env.prod --dist .env.dist --set PORT=8080 --set LOG_LEVEL=warn`
 
 ## Project Structure
 
@@ -164,13 +243,13 @@ docker run -p 3000:3000 -v $(pwd):/app -v /app/node_modules api-inventory:dev
 
 ```bash
 # Development
-docker-compose --profile dev up
+docker compose --profile dev up
 
 # Production
-docker-compose --profile prod up
+docker compose --profile prod up
 
 # Default (production)
-docker-compose up
+docker compose up
 ```
 
 ### Docker Architecture
@@ -188,6 +267,68 @@ The Dockerfile uses a multi-stage build:
 - Health check endpoint
 - Minimal Alpine Linux base image
 - Clean npm cache to reduce image size
+
+### Force Docker to rebuild (images, containers, volumes)
+
+Common scenarios and one-liners when Docker won’t pick up your changes or you need a clean slate.
+
+- Rebuild image without using cache (single Dockerfile build):
+
+  - `docker build --no-cache -t api-inventory .`
+
+- Rebuild and recreate with Docker Compose (build fresh image and force new containers):
+
+  - `docker compose up --build --force-recreate`
+  - Tip: add --no-deps to recreate only the listed services.
+
+- Rebuild compose images without cache first, then start:
+
+  - `docker compose build --no-cache`
+  - `docker compose up --force-recreate`
+
+- Nuke containers, networks, and volumes created by compose (careful: deletes data volumes):
+
+  - `docker compose down -v --remove-orphans`
+
+- Remove images built by the compose project (to force a full re-pull/rebuild next time):
+
+  - `docker compose down --rmi local`
+
+- Aggressive prune (all dangling/unused images, containers, networks, caches, and volumes):
+
+  - `docker system prune -af --volumes`
+
+- Cache-busting trick in Dockerfile (optional):
+
+  - Add an ARG and change it to invalidate cache across layers
+  - Example lines you can add near the top of your Dockerfile build stage: ARG CACHE_BUST=0
+    # bump the value: --build-arg CACHE_BUST=$(date +%s)
+
+- Recreate only containers (without rebuilding images):
+
+  - `docker compose up --force-recreate --no-build`
+
+- Verify what will be used (images and configs):
+  - `docker compose config`
+
+If you prefer npm scripts, see package.json entries added below.
+
+- Development (Compose dev profile): `npm run compose:up:dev`
+- Production (Compose prod profile): `docker compose --profile prod up`
+- Change host port only (container still listens on 3000 by default):
+  `HOST_PORT=3001 docker compose up`
+- Change container internal port too:
+  - Compose: `HOST_PORT=4000 PORT=4000 docker compose up` (ports mapping uses
+    `${HOST_PORT:-3000}:${PORT:-3000}`)
+  - CLI: `docker run -e PORT=4000 -p 4000:4000 api-inventory`
+- Override storage adapter/path at runtime (compose): `STORAGE_ADAPTER=memory docker compose up`
+- Override from CLI:
+  `docker run -e STORAGE_ADAPTER=sqlite -e SQLITE_DB_PATH=/data/inventory.db -p 3000:3000 api-inventory`
+- Notes:
+  - The image contains a generated .env with safe defaults, but any env provided by docker-compose
+    or `docker run -e` overrides those values.
+  - Healthcheck respects `PORT`. If you change `PORT`, ensure your ports mapping matches.
+- ESM: Extensionless imports are supported in dev and prod containers.
 
 ## Development Workflow
 
@@ -226,7 +367,7 @@ The Dockerfile uses a multi-stage build:
 
 2. **Run tests inside container:**
    ```bash
-   docker-compose exec api-dev npm test
+   docker compose exec api-dev npm test
    ```
 
 ### Production Build
@@ -284,16 +425,14 @@ The project uses `vitest.config.ts` for configuration:
 ## Debugging in IntelliJ IDEA
 
 You can debug this project in IntelliJ IDEA (Ultimate recommended for full Node.js support) in
-multiple ways. Breakpoints work in .ts files because the project uses ts-node with source maps
-enabled.
+multiple ways. Breakpoints work in .ts files because the project uses tsx with source maps enabled.
 
 Important context:
 
-- Dev scripts use the ts-node ESM loader and Node’s experimental specifier resolution for .ts
-  imports:
+- Dev scripts use tsx with Node’s experimental specifier resolution for ESM TypeScript:
   - `npm run dev`
   - `npm run dev:debug` (starts Node inspector on port 9229)
-- tsconfig: module=esnext, moduleResolution=bundler, sourceMap=true, allowImportingTsExtensions=true
+- tsconfig: module=esnext, moduleResolution=bundler, sourceMap=true
 - package.json: "type": "module" (ESM)
 
 ### Option A: Use the provided Run/Debug configurations
@@ -328,10 +467,13 @@ In IDEA:
 4. JavaScript file: `src/index.ts`
 5. Node parameters:
 
-- `--inspect=0.0.0.0:9229 --loader ts-node/esm --no-warnings=ExperimentalWarning --experimental-specifier-resolution=node`
+- `--inspect=0.0.0.0:9229 --experimental-specifier-resolution=node`
 
 6. Environment variables (optional): HOST=0.0.0.0, PORT=3000
 7. Click Debug to start.
+
+Note: Prefer the provided npm scripts (Option A/B), which run tsx and handle TypeScript/ESM
+automatically.
 
 ### Option D: Attach to a running process
 
